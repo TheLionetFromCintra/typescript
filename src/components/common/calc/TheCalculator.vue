@@ -58,7 +58,7 @@ onMounted(() => {
 .calc {
     width: 100%;
     max-width: 304px;
-    padding-top: 85px;
+    padding-top: 55px;
 
     @media (max-width: $tablet) {
         padding-top: 45px;

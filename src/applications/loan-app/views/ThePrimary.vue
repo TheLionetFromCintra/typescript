@@ -1,0 +1,1 @@
+<template>primary page</template>
