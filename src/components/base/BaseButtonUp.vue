@@ -35,7 +35,7 @@ onMounted(() => {
             <div
                 class="icon img-wrapper d-flex align-items-center justify-content-center"
             >
-                <img src="assets/images/common/arrow.svg" alt="arrow icon" />
+                <!-- <img src="assets/images/common/arrow.svg" alt="arrow icon" /> -->
             </div>
         </div>
     </teleport>
