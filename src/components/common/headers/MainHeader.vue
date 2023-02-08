@@ -1,21 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import TheHeader from '@/components/common/headers/TheHeader.vue'
+import TheCalculator from '@/components/common/calc/TheCalculator.vue'
+import BenefitList from '@/applications/landing/components/benefits/BenefitList.vue'
 
-const benefits = ref([
-    {
-        title: 'Быстро',
-        description: '5 минут от заявки до денег',
-    },
-    {
-        title: 'Надежно',
-        description: 'Шифруем и защищаем данные',
-    },
-    {
-        title: 'Удобно',
-        description: 'Займы без отказов и проверок',
-    },
-])
+interface Props {
+    title: string
+    desc: string
+}
+
+const { title, desc } = defineProps<Props>()
 </script>
 
 <template>
@@ -25,35 +18,22 @@ const benefits = ref([
 
             <div class="top d-flex justify-content-between">
                 <div class="desc">
-                    <slot name="title"></slot>
+                    <h1 v-html="title"></h1>
+                    <p v-html="desc"></p>
+                    <div class="button">
+                        <router-link
+                            to="/primary"
+                            class="d-flex align-items-center"
+                        >
+                            <span>Заполнить заявку</span>
+                        </router-link>
+                    </div>
                 </div>
-                <div class="calc">calc</div>
+
+                <the-calculator></the-calculator>
             </div>
 
-            <ul class="benefits d-flex justify-content-center">
-                <li
-                    class="benefit d-flex align-items-start"
-                    v-for="benefit in benefits"
-                    :key="benefit.title"
-                >
-                    <div
-                        class="icon d-flex align-items-center justify-content-center"
-                    >
-                        <div
-                            class="img img-wrapper d-flex align-items-center justify-content-center"
-                        >
-                            <img
-                                src="assets/images/main-header/benefit-icon.svg"
-                                alt="benefit icon"
-                            />
-                        </div>
-                    </div>
-                    <div class="helper">
-                        <span>{{ benefit.title }}</span>
-                        <p>{{ benefit.description }}</p>
-                    </div>
-                </li>
-            </ul>
+            <benefit-list></benefit-list>
         </div>
     </section>
 </template>
@@ -120,51 +100,74 @@ const benefits = ref([
 
     .desc {
         max-width: 468px;
-    }
-}
-.benefits {
-    margin-top: 16px;
 
-    @media (max-width: $tablet) {
-        flex-direction: column;
-        padding-left: 100px;
-    }
-}
-.benefit {
-    width: 100%;
-    max-width: 204px;
+        h1 {
+            margin-bottom: 35px;
+            font-weight: 600;
+            font-size: 48px;
+            line-height: 65px;
+            color: $primary-grey-dark;
 
-    .icon {
-        width: 22px;
-        flex-shrink: 0;
-        margin-right: 14px;
-        .img {
-            max-width: 22px;
-            height: 14px;
+            &::v-deep {
+                span,
+                .colored {
+                    font-weight: inherit;
+                }
+                .colored {
+                    display: block;
+                    color: $main_brand_1;
+                }
+            }
         }
-    }
-    .helper {
-        max-width: 164px;
-        span,
         p {
-            font-size: 16px;
-            line-height: 22px;
-            letter-spacing: 0.07em;
+            max-width: 370px;
+            font-size: 24px;
+            line-height: 33px;
             color: $primary-black;
         }
-        span {
-            display: inline-block;
-            font-weight: 600;
-            margin-bottom: 12px;
+
+        .button {
+            margin-top: 24px;
+            padding-left: 15px;
+            width: fit-content;
+
+            @media (max-width: $tablet) {
+                display: none;
+            }
+
+            a {
+                width: 128px;
+                height: 128px;
+                padding: 0 15px;
+
+                font-weight: 600;
+                font-size: 12px;
+                line-height: 16px;
+                color: $primary-black;
+
+                position: relative;
+                z-index: 1;
+
+                &::before {
+                    content: url('assets/images/main-header/arrow.png');
+                    position: absolute;
+                    left: -15px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    z-index: -1;
+                }
+            }
         }
-    }
-}
-.benefit + .benefit {
-    margin-left: 40px;
-}
-@media (max-width: $tablet) {
-    .benefit + .benefit {
-        margin: 40px 0 0 0;
+
+        @media (max-width: $tablet) {
+            max-width: 80%;
+            text-align: center;
+
+            p {
+                max-width: 700px;
+                margin: 0 auto;
+            }
+        }
     }
 }
 
@@ -175,32 +178,63 @@ const benefits = ref([
         align-items: center;
     }
 }
+.desc h1 {
+    &::v-deep {
+        .underline {
+            &::before {
+                bottom: 10px;
+            }
+        }
+    }
+}
 
-.desc h1 .underline,
-.desc p span,
-.benefit .helper span {
-    position: relative;
-    z-index: 1;
-    &::before {
-        content: '';
-        position: absolute;
-        bottom: 3px;
-        left: 0;
-        z-index: -1;
-        height: 5px;
-        width: 100%;
-        background-color: $main_brand_2;
+@media (max-width: $mobile) {
+    .main-header {
+        .container {
+            max-width: 100%;
+            padding: 35px 24px 190px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            &::after {
+                width: 230px;
+                height: 310px;
+                right: -6%;
+            }
+            @media (max-width: 374px) {
+                &::after {
+                    right: -25%;
+                }
+            }
+        }
+        .top {
+            margin-top: 34px;
+            width: 100%;
+        }
+        .desc {
+            h1 {
+                font-size: 36px;
+                line-height: 44px;
+                margin-bottom: 42px;
+            }
+            p {
+                font-size: 16px;
+                line-height: 22px;
+                max-width: 500px;
+            }
+        }
     }
-}
-.desc h1 .underline {
-    &::before {
-        bottom: 10px;
-    }
-}
-.benefit .helper span {
-    &::before {
-        width: 80px;
-        bottom: 3px;
+
+    .desc h1,
+    .desc p {
+        &::v-deep {
+            .underline {
+                &::before {
+                    height: 4px;
+                }
+            }
+        }
     }
 }
 </style>

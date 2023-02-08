@@ -13,7 +13,7 @@ import AboutUs from './components/about/AboutUs.vue'
 import PayList from './components/pay/PayList.vue'
 import StepList from './components/step/StepList.vue'
 
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import useMobile from '@/hooks/mobile'
 
 const ReviewsList = defineAsyncComponent(
@@ -21,6 +21,13 @@ const ReviewsList = defineAsyncComponent(
 )
 
 const { isMobile } = useMobile()
+
+const title = ref(
+    `Для получения займа под <span class="underline">0%</span> <span class="colored">заполните анкету</span>`
+)
+const desc = ref(
+    ` Получи деньги <span class="underline">быстро</span> и <span class="underline">просто</span> независимо от вашей кредитной истории`
+)
 
 const setObserver = function () {
     const allSections = document.querySelectorAll('.observed')
@@ -51,23 +58,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <main-header class="main-header">
-        <template #title>
-            <h1>
-                Для получения займа под <span class="underline">0%</span>
-                <span class="colored">заполните анкету</span>
-            </h1>
-            <p>
-                Получи деньги <span>быстро</span> и <span>просто</span>
-                независимо от вашей кредитной истории
-            </p>
-            <div class="button">
-                <router-link to="/primary" class="d-flex align-items-center">
-                    <span>Заполнить заявку</span>
-                </router-link>
-            </div>
-        </template>
-    </main-header>
+    <main-header class="main-header" :title="title" :desc="desc"></main-header>
 
     <section-wrapper title="Как это работает?" class="steps observed">
         <template #content>
@@ -135,71 +126,7 @@ onMounted(() => {
     opacity: 0;
     transform: translateY(8rem);
 }
-.main-header {
-    h1 {
-        margin-bottom: 35px;
-        font-weight: 600;
-        font-size: 48px;
-        line-height: 65px;
-        color: $primary-grey-dark;
-        span {
-            font-weight: inherit;
-        }
-        .colored {
-            display: block;
-            color: $main_brand_1;
-        }
-    }
-    p {
-        max-width: 370px;
-        font-size: 24px;
-        line-height: 33px;
-        color: $primary-black;
-    }
 
-    @media (max-width: $tablet) {
-        max-width: 80%;
-        text-align: center;
-
-        p {
-            max-width: 700px;
-            margin: 0 auto;
-        }
-    }
-
-    .button {
-        margin-top: 24px;
-        padding-left: 15px;
-        width: fit-content;
-
-        @media (max-width: $tablet) {
-            display: none;
-        }
-
-        a {
-            width: 128px;
-            height: 128px;
-            padding: 0 15px;
-
-            font-weight: 600;
-            font-size: 12px;
-            line-height: 16px;
-            color: $primary-black;
-
-            position: relative;
-            z-index: 1;
-
-            &::before {
-                content: url('assets/images/main-header/arrow.png');
-                position: absolute;
-                left: -15px;
-                top: 50%;
-                transform: translateY(-50%);
-                z-index: -1;
-            }
-        }
-    }
-}
 @media (max-width: $mobile) {
     .observed--hidden {
         opacity: 0;

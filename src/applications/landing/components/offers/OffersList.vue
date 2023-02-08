@@ -4,18 +4,21 @@ import type { Offers } from '@/types/views/landing/offers/offers'
 
 const offers = ref<Offers[]>([
     {
+        id: '01ca29fe-979d-4235-9033-5bea5c7eb0cf',
         title: 'Начинающий',
         price: 'до 30 000',
         days: 'от 3 до 21 дня',
         icon: 'beginner',
     },
     {
+        id: 'd4b1f3f3-261d-4df6-a74a-e5768d341ac8',
         title: 'Pro',
         price: 'до 60 000',
         days: 'от 3 до 60 дней',
         icon: 'pro',
     },
     {
+        id: 'c9db8168-1eba-47d2-9e09-9f97f480240b',
         title: 'VIP',
         price: 'до 100 000',
         days: 'от 3 до 365 дней',
@@ -29,7 +32,7 @@ const offers = ref<Offers[]>([
         <li
             class="item d-flex flex-column align-items-center justify-content-between"
             v-for="offer in offers"
-            :key="offer.title"
+            :key="offer.id"
         >
             <div class="icon d-flex align-items-center justify-content-center">
                 <div

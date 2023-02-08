@@ -4,21 +4,25 @@ import type { AboutList } from '@/types/views/landing/about/about'
 
 const aboutList = ref<AboutList[]>([
     {
+        id: '32c902b1-744f-424f-8ac2-19cd92ea7cdd ',
         title: 'Данные под защитой',
         description: 'Шифруем данные и не передаем третьим лицам',
         icon: 'shield',
     },
     {
+        id: '516abad2-1635-4315-95df-2ba122176050',
         title: 'Без проверки кредитной истории',
         description: 'Мы не проверяем ваш рейтинг',
         icon: 'thumbs',
     },
     {
+        id: 'eaf58d3f-1b27-4320-b94f-5bff2396f22c',
         title: 'Без звонков и справок с работы',
         description: 'Нужно только заполнить анкету',
         icon: 'phone',
     },
     {
+        id: 'bc3be463-e92e-41d3-8767-f35768fa79e0',
         title: 'Без скрытых комиссий',
         description: 'Подбор займа бесплатно',
         icon: 'wallet',
@@ -28,7 +32,7 @@ const aboutList = ref<AboutList[]>([
 
 <template>
     <ul class="items">
-        <li class="item" v-for="item in aboutList" :key="item.title">
+        <li class="item" v-for="item in aboutList" :key="item.id">
             <div class="top d-flex align-items-center">
                 <div
                     class="icon d-flex align-items-center justify-content-center"

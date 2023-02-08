@@ -2,7 +2,7 @@
 import { useDictionaryStore } from '@/stores/common/DictionaryStore'
 import useMobile from '@/hooks/mobile'
 
-const { isMobile, isMenu } = useMobile()
+const { isMenu } = useMobile()
 
 const dictionaryStore = useDictionaryStore()
 </script>
@@ -34,9 +34,11 @@ const dictionaryStore = useDictionaryStore()
                 >Получить займ</base-button
             >
             <div class="header__mobile" v-if="isMenu">
-                <span class="header__burger" @click="menu = true"
-                    ><span></span
-                ></span>
+                <div class="burger">
+                    <span class="line line1"></span>
+                    <span class="line line2"></span>
+                    <span class="line line3"></span>
+                </div>
             </div>
         </div>
     </header>
@@ -45,6 +47,7 @@ const dictionaryStore = useDictionaryStore()
 <style scoped lang="scss">
 .header {
     color: $primary-black;
+    width: 100%;
 
     @media (max-width: $mobile) {
         padding: 0;

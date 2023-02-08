@@ -8,14 +8,17 @@ const dictionaryStore = useDictionaryStore()
 
 const contacts = ref<Contacts[]>([
     {
+        id: '1d71bcc9-76a8-4a72-a5f6-ec065894cd0d',
         title: 'Телефон',
         tag: 'phone',
     },
     {
+        id: '782375c9-4eac-4550-a3dd-efe26f833096',
         title: 'Эл. почта',
         tag: 'email',
     },
     {
+        id: '50b50a2c-aeb7-484c-b622-1952b77d98b0',
         title: 'Адрес',
         tag: 'address',
     },
@@ -27,7 +30,7 @@ const contacts = ref<Contacts[]>([
         <li
             class="item d-flex flex-column align-items-center"
             v-for="contact in contacts"
-            :key="contact.title"
+            :key="contact.id"
         >
             <div class="icon d-flex align-items-center justify-content-center">
                 <div

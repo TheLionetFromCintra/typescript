@@ -6,14 +6,17 @@ import type { Stats } from '@/types/views/landing/stat/stat'
 
 const stats = ref<Stats[]>([
     {
+        id: '29cd0167-284a-4991-8854-86794b2110d0',
         title: '19 542',
         description: 'одобренных займов',
     },
     {
+        id: '2e5892db-fcdf-4f28-a180-b5c99212decd',
         title: '683,97 М',
         description: 'рублей выдано',
     },
     {
+        id: 'a56cf8c3-952a-4840-a419-1dbe934bb665',
         title: '98%',
         description: 'вероятность одобрения',
     },
@@ -27,7 +30,7 @@ const { isMobile } = useMobile()
         <li
             class="item d-flex flex-column align-items-center justify-content-between"
             v-for="stat in stats"
-            :key="stat.title"
+            :key="stat.id"
         >
             <h4>{{ stat.title }}</h4>
             <span>{{ stat.description }}</span>

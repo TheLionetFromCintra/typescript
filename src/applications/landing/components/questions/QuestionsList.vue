@@ -5,6 +5,7 @@ import type { Questions } from '@/types/views/landing/questions/questions'
 
 const questions = ref<Questions[]>([
     {
+        id: '3edb5ed5-9833-410c-bf9c-9b7ee6cae9d1 ',
         title: 'Условия выдачи займа',
         description: `
             <span>Чтобы получить деньги, нужно совершить несколько простых действий</span>
@@ -25,6 +26,7 @@ const questions = ref<Questions[]>([
         active: false,
     },
     {
+        id: 'b7496a95-7315-4452-ae1f-a4f62f568a6a',
         title: 'Как долго рассматривается заявка?',
         description: `
              <ol>
@@ -39,6 +41,7 @@ const questions = ref<Questions[]>([
         active: false,
     },
     {
+        id: 'a68a6e48-0654-4a91-ab77-a6bef51481bb',
         title: 'Если я не успеваю вернуть займ?',
         description: `
              <ol>
@@ -50,6 +53,7 @@ const questions = ref<Questions[]>([
         active: false,
     },
     {
+        id: '748ade7b-fddc-4456-9378-9e90a30a805f',
         title: 'Получу ли я деньги с плохой кредитной историей?',
         description: `
             <ol>
@@ -64,6 +68,7 @@ const questions = ref<Questions[]>([
         active: false,
     },
     {
+        id: 'f0e10c21-a639-46be-a85f-e4a5682ba3e4 ',
         title: 'Сколько я могу получить и на какой срок?',
         description: `
             <ol>
@@ -75,6 +80,7 @@ const questions = ref<Questions[]>([
         active: false,
     },
     {
+        id: '3e32e191-a2ef-4582-b376-8719b8d900a5 ',
         title: 'Переплаты и комиссии по займу?',
         description: `
             <ol>
@@ -103,7 +109,7 @@ const toggleOpen = function (index: number) {
     <ul class="items">
         <question-item
             v-for="(question, index) in questions"
-            :key="question.title"
+            :key="question.id"
             :question="question"
             :index="index"
             @toggleOpen="toggleOpen"

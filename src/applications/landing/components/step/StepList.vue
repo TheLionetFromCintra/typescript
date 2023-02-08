@@ -4,12 +4,15 @@ import type { Steps } from '@/types/views/landing/steps/steps'
 
 const steps = ref<Steps[]>([
     {
+        id: 'd96ff25f-93e5-49fc-890d-aa57b808f8d7',
         description: 'Заполните короткую анкету',
     },
     {
+        id: '97eb0cca-b6f0-4151-be35-0e3a9c699c87',
         description: 'Выберите компанию из списка',
     },
     {
+        id: '45f18217-c6e6-4388-80fd-a16e4d4597e5',
         description: 'Получите предложения',
     },
 ])
@@ -17,7 +20,7 @@ const steps = ref<Steps[]>([
 
 <template>
     <ul class="list d-flex justify-content-between">
-        <li class="step" v-for="(step, index) in steps" :key="step.description">
+        <li class="step" v-for="(step, index) in steps" :key="step.id">
             <div class="num d-flex align-items-center justify-content-center">
                 <div class="d-flex align-items-center justify-content-center">
                     <span>{{ index + 1 }}</span>
