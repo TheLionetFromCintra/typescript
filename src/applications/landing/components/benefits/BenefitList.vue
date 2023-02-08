@@ -33,7 +33,7 @@ const benefits = ref<Benefits[]>([
                     class="img img-wrapper d-flex align-items-center justify-content-center"
                 >
                     <img
-                        src="assets/images/main-header/benefit-icon.svg"
+                        src="/assets/images/main-header/benefit-icon.svg"
                         alt="benefit icon"
                     />
                 </div>

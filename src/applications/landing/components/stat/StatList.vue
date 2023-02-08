@@ -63,7 +63,7 @@ const { isMobile } = useMobile()
                     class="icon img-wrapper d-flex align-items-center justify-content-center"
                 >
                     <img
-                        src="assets/images/stat/shield.svg"
+                        src="/assets/images/stat/shield.svg"
                         alt="shield icon"
                     />
                 </div>

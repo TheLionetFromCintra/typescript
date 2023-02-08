@@ -89,7 +89,7 @@ const reviews = ref<Reviews[]>([
                                 :key="index"
                             >
                                 <img
-                                    src="assets/images/reviews/star.svg"
+                                    src="/assets/images/reviews/star.svg"
                                     alt="star icon"
                                 />
                             </div>
