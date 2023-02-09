@@ -12,13 +12,13 @@ const router = createRouter({
             path: '/',
             name: 'landing',
             component: TheLanding,
-            beforeEnter: (to, _) => {
-                if (!Cookies.get('sbg-cpa') && to.name === 'landing')
-                    return { name: 'LoanPrimary' }
+            // beforeEnter: (to, _) => {
+            //     if (!Cookies.get('sbg-cpa') && to.name === 'landing')
+            //         return { name: 'LoanPrimary' }
 
-                if (Cookies.get('sbg-cpa') && to.name !== 'landing')
-                    return false
-            },
+            //     if (Cookies.get('sbg-cpa') && to.name !== 'landing')
+            //         return false
+            // },
         },
         {
             path: '/primary',
