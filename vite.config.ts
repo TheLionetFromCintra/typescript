@@ -20,7 +20,7 @@ export default defineConfig({
                 ws: true,
             },
             '^/dictionary': {
-                target: 'https://modern-vue.netlify.app/',
+                target: 'https://kviza.ra1z.ru',
                 changeOrigin: true,
                 secure: false,
                 ws: true,
