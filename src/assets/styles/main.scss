@@ -228,6 +228,38 @@ body {
 }
 //vue-slider-range
 
+.bg-animate,
+.lazy-img {
+    background-image: linear-gradient(
+        to right,
+        #d6d7d8 0%,
+        #e2e3e4 10%,
+        #d6d7d8 20%,
+        #d6d7d8 100%
+    ) !important;
+    background-size: 200% 100% !important;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 /0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    animation: bgAnimate 1.2s linear infinite;
+}
+.lazy-img {
+    filter: blur(1px);
+    width: 100%;
+    height: 100%;
+
+    img {
+        opacity: 0;
+    }
+}
+
+@keyframes bgAnimate {
+    0% {
+        background-position: 50% 0;
+    }
+    100% {
+        background-position: -150% 0;
+    }
+}
+
 @media (max-width: $tablet) {
     .container {
         max-width: 100%;

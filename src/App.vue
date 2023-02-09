@@ -5,6 +5,7 @@ import { useDictionaryStore } from '@/stores/common/DictionaryStore'
 const dictionaryStore = useDictionaryStore()
 
 onMounted(() => {
+    document.querySelector('.preloader')?.remove()
     dictionaryStore.init()
 })
 </script>

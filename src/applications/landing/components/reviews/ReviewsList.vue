@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination, EffectCards } from 'swiper'
+import { vLazyload } from '@/directives/vLazyload'
 
 import 'swiper/css'
 import 'swiper/css/navigation'
@@ -73,10 +74,11 @@ const reviews = ref<Reviews[]>([
             <swiper-slide v-for="review in reviews" :key="review.id">
                 <div class="slide d-flex">
                     <div
-                        class="img img-wrapper d-flex align-items-center justify-content-center"
+                        class="img img-wrapper d-flex align-items-center justify-content-center lazy-img"
                     >
                         <img
-                            :src="`assets/images/reviews/${review.photo}.png`"
+                            v-lazyload
+                            :data-src="`assets/images/reviews/${review.photo}.png`"
                             alt="user photo"
                         />
                     </div>

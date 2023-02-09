@@ -25,6 +25,7 @@ h2 {
 .wrapper {
     width: 100%;
     margin: 0 auto;
+    position: relative;
 }
 
 .steps {
@@ -109,17 +110,6 @@ h2 {
     .wrapper {
         max-width: 1066px;
         position: relative;
-
-        &::before {
-            content: url('assets/images/stat/Lady.png');
-            left: -265px;
-            bottom: -102px;
-            position: absolute;
-            z-index: 100;
-            @media (max-width: $tablet) {
-                content: none;
-            }
-        }
     }
 }
 

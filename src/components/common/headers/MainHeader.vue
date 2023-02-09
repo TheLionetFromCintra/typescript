@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import TheHeader from '@/components/common/headers/TheHeader.vue'
-import TheCalculator from '@/components/common/calc/TheCalculator.vue'
 import BenefitList from '@/applications/landing/components/benefits/BenefitList.vue'
+import CalculatorSkeleton from '@/components/common/calc/CalculatorSkeleton.vue'
+
+import { vLazyload } from '@/directives/vLazyload'
+import { defineAsyncComponent } from 'vue'
+
+const TheCalculator = defineAsyncComponent(
+    () => import('@/components/common/calc/TheCalculator.vue')
+)
 
 interface Props {
     title: string
@@ -15,6 +22,15 @@ const { title, desc } = defineProps<Props>()
     <section>
         <div class="container">
             <the-header></the-header>
+
+            <div class="lazy-img main-img">
+                <img
+                    v-lazyload
+                    data-src="/assets/images/main-header/lady.png"
+                    src="/assets/images/main-header/lazy.png"
+                    alt="main lady image"
+                />
+            </div>
 
             <div class="top d-flex justify-content-between">
                 <div class="desc">
@@ -30,7 +46,12 @@ const { title, desc } = defineProps<Props>()
                     </div>
                 </div>
 
-                <the-calculator></the-calculator>
+                <suspense>
+                    <the-calculator></the-calculator>
+                    <template #fallback
+                        ><calculator-skeleton></calculator-skeleton
+                    ></template>
+                </suspense>
             </div>
 
             <benefit-list></benefit-list>
@@ -40,14 +61,46 @@ const { title, desc } = defineProps<Props>()
 
 <style scoped lang="scss">
 .main-header {
+    .main-img {
+        position: absolute;
+        left: 52%;
+        top: 120px;
+        width: 408px;
+        height: 547px;
+        z-index: -1;
+        transform: translateX(-50%);
+
+        background-image: none !important;
+        box-shadow: none;
+        img {
+            opacity: 1;
+        }
+
+        @media (max-width: $tablet) {
+            top: initial;
+            bottom: 0;
+            transform: translateX(0);
+            right: -10%;
+            left: initial;
+        }
+
+        @media (max-width: $mobile) {
+            width: 230px;
+            height: 310px;
+            right: -6%;
+
+            @media (max-width: 374px) {
+                right: -25%;
+            }
+        }
+    }
     .container {
         padding: 50px 40px 36px 40px;
         margin: 0 auto;
         position: relative;
         z-index: 1;
 
-        &::before,
-        &::after {
+        &::before {
             content: '';
             position: absolute;
             z-index: -1;
@@ -65,14 +118,6 @@ const { title, desc } = defineProps<Props>()
             height: 100%;
             width: 430px;
         }
-        &::after {
-            background: url('assets/images/main-header/lady.png') no-repeat;
-            background-size: contain;
-            left: 52%;
-            top: 120px;
-            width: 408px;
-            height: 547px;
-        }
 
         @media (max-width: $tablet) {
             background: linear-gradient(
@@ -87,13 +132,6 @@ const { title, desc } = defineProps<Props>()
 
             &::before {
                 content: none;
-            }
-            &::after {
-                top: initial;
-                bottom: 0;
-                transform: translateX(0);
-                right: -10%;
-                left: initial;
             }
         }
     }
@@ -196,17 +234,6 @@ const { title, desc } = defineProps<Props>()
             display: flex;
             flex-direction: column;
             align-items: center;
-
-            &::after {
-                width: 230px;
-                height: 310px;
-                right: -6%;
-            }
-            @media (max-width: 374px) {
-                &::after {
-                    right: -25%;
-                }
-            }
         }
         .top {
             margin-top: 34px;

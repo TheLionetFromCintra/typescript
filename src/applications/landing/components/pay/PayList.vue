@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { vLazyload } from '@/directives/vLazyload'
 
 const pays = ref<string[]>(['visa', 'mir', 'master', 'qiwi'])
 </script>
@@ -15,9 +16,13 @@ const pays = ref<string[]>(['visa', 'mir', 'master', 'qiwi'])
     <ul class="list d-flex align-items-center justify-content-between">
         <li v-for="pay in pays" :key="pay">
             <div
-                class="img img-wrapper d-flex align-items-center justify-content-center"
+                class="img img-wrapper d-flex align-items-center justify-content-center lazy-img"
             >
-                <img :src="`assets/images/pay/pay-${pay}.svg`" :alt="pay" />
+                <img
+                    v-lazyload
+                    :alt="pay"
+                    :data-src="`assets/images/pay/pay-${pay}.svg`"
+                />
             </div>
         </li>
     </ul>
@@ -35,6 +40,9 @@ const pays = ref<string[]>(['visa', 'mir', 'master', 'qiwi'])
 .list {
     max-width: 896px;
     margin: 0 auto;
+    li {
+        width: 100%;
+    }
     li + li {
         margin-left: 24px;
     }
@@ -53,8 +61,12 @@ const pays = ref<string[]>(['visa', 'mir', 'master', 'qiwi'])
     }
     .list {
         justify-content: center !important;
+        max-width: 275px;
         li:last-child {
             display: none;
+        }
+        li {
+            max-width: 58px;
         }
         .li + li {
             margin-left: 20px;

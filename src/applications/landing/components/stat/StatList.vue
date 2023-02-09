@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import useMobile from '@/hooks/mobile'
 import { ref } from 'vue'
+import { vLazyload } from '@/directives/vLazyload'
 
 import type { Stats } from '@/types/views/landing/stat/stat'
 
@@ -26,6 +27,14 @@ const { isMobile } = useMobile()
 </script>
 
 <template>
+    <div class="lazy-img stat-img">
+        <img
+            v-lazyload
+            src="/assets/images/stat/Lazy.png"
+            data-src="/assets/images/stat/Lady.png"
+            alt="image lady"
+        />
+    </div>
     <ul class="items justify-content-between" v-if="!isMobile">
         <li
             class="item d-flex flex-column align-items-center justify-content-between"
@@ -57,13 +66,14 @@ const { isMobile } = useMobile()
         </div>
         <div class="safe">
             <div
-                class="shield d-flex align-items-center justify-content-center"
+                class="shield d-flex align-items-center justify-content-center lazy-img"
             >
                 <div
                     class="icon img-wrapper d-flex align-items-center justify-content-center"
                 >
                     <img
-                        src="/assets/images/stat/shield.svg"
+                        v-lazyload
+                        data-src="/assets/images/stat/shield.svg"
                         alt="shield icon"
                     />
                 </div>
@@ -81,6 +91,28 @@ h5 {
     width: 100%;
     display: grid;
     grid-template-columns: repeat(3, 31%);
+}
+.stat-img {
+    max-width: 438px;
+    height: 540px;
+
+    background-image: none !important;
+    box-shadow: none;
+
+    left: -265px;
+    bottom: -102px;
+    position: absolute;
+    z-index: 100;
+
+    img {
+        opacity: 1;
+    }
+    @media (max-width: $tablet) {
+        display: none;
+    }
+    &.lazy-img {
+        filter: blur(10px);
+    }
 }
 .item {
     background: #fafafa;

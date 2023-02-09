@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { Offers } from '@/types/views/landing/offers/offers'
+import { vLazyload } from '@/directives/vLazyload'
 
 const offers = ref<Offers[]>([
     {
@@ -34,12 +35,15 @@ const offers = ref<Offers[]>([
             v-for="offer in offers"
             :key="offer.id"
         >
-            <div class="icon d-flex align-items-center justify-content-center">
+            <div
+                class="icon d-flex align-items-center justify-content-center lazy-img"
+            >
                 <div
                     class="img img-wrapper d-flex align-items-center justify-content-center"
                 >
                     <img
-                        :src="`assets/images/offers/${offer.icon}.svg`"
+                        v-lazyload
+                        :data-src="`assets/images/offers/${offer.icon}.svg`"
                         alt="offer logo"
                     />
                 </div>

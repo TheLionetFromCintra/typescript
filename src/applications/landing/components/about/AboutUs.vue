@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { AboutList } from '@/types/views/landing/about/about'
+import { vLazyload } from '@/directives/vLazyload'
 
 const aboutList = ref<AboutList[]>([
     {
@@ -35,13 +36,14 @@ const aboutList = ref<AboutList[]>([
         <li class="item" v-for="item in aboutList" :key="item.id">
             <div class="top d-flex align-items-center">
                 <div
-                    class="icon d-flex align-items-center justify-content-center"
+                    class="icon d-flex align-items-center justify-content-center lazy-img"
                 >
                     <div
                         class="img-wrapper d-flex align-items-center justify-content-center"
                     >
                         <img
-                            :src="`assets/images/about/${item.icon}.svg`"
+                            v-lazyload
+                            :data-src="`assets/images/about/${item.icon}.svg`"
                             :alt="item.title"
                         />
                     </div>

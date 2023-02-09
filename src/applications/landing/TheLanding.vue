@@ -12,6 +12,7 @@ import OffersList from './components/offers/OffersList.vue'
 import AboutUs from './components/about/AboutUs.vue'
 import PayList from './components/pay/PayList.vue'
 import StepList from './components/step/StepList.vue'
+import ReviewsSkeleton from './components/reviews/ReviewsSkeleton.vue'
 
 import { onMounted, ref } from 'vue'
 import useMobile from '@/hooks/mobile'
@@ -89,7 +90,12 @@ onMounted(() => {
 
     <section-wrapper title="Отзывы наших клиентов" class="reviews observed">
         <template #content>
-            <reviews-list></reviews-list>
+            <suspense>
+                <reviews-list></reviews-list>
+                <template #fallback
+                    ><reviews-skeleton></reviews-skeleton
+                ></template>
+            </suspense>
         </template>
     </section-wrapper>
 

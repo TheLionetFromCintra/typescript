@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useDictionaryStore } from '@/stores/common/DictionaryStore'
 import { ref } from 'vue'
+import { vLazyload } from '@/directives/vLazyload'
 
 import type { Contacts } from '@/types/views/landing/contacts/contacts'
 
@@ -32,12 +33,15 @@ const contacts = ref<Contacts[]>([
             v-for="contact in contacts"
             :key="contact.id"
         >
-            <div class="icon d-flex align-items-center justify-content-center">
+            <div
+                class="icon d-flex align-items-center justify-content-center lazy-img"
+            >
                 <div
                     class="img img-wrapper d-flex align-items-center justify-content-center"
                 >
                     <img
-                        :src="`assets/images/contacts/${contact.tag}.svg`"
+                        v-lazyload
+                        :data-src="`assets/images/contacts/${contact.tag}.svg`"
                         :alt="contact.title"
                     />
                 </div>
