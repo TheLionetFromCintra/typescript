@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Cookies from 'js-cookie'
 
 import TheLanding from '@/applications/landing/TheLanding.vue'
-import ThePrimary from '@/applications/loan-app/views/ThePrimary.vue'
+import ThePrimary from '@/applications/loan-app/views/primary/ThePrimary.vue'
 import NotFound from '@/applications/404/NotFound.vue'
 
 const router = createRouter({
@@ -12,13 +12,13 @@ const router = createRouter({
             path: '/',
             name: 'landing',
             component: TheLanding,
-            // beforeEnter: (to, _) => {
-            //     if (!Cookies.get('sbg-cpa') && to.name === 'landing')
-            //         return { name: 'LoanPrimary' }
+            beforeEnter: (to, _) => {
+                if (!Cookies.get('sbg-cpa') && to.name === 'landing')
+                    return { name: 'LoanPrimary' }
 
-            //     if (Cookies.get('sbg-cpa') && to.name !== 'landing')
-            //         return false
-            // },
+                if (Cookies.get('sbg-cpa') && to.name !== 'landing')
+                    return false
+            },
         },
         {
             path: '/primary',

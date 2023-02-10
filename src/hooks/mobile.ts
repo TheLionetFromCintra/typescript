@@ -1,9 +1,11 @@
 import { ref, watch, onUnmounted, onMounted } from 'vue'
+import Cookies from 'js-cookie'
 
 export default function useMobile() {
     const windowWidth = ref(0)
     const isMobile = ref(false)
     const isMenu = ref(false)
+    const isCpa = ref(false)
 
     const handleResize = function () {
         windowWidth.value = window.innerWidth
@@ -29,11 +31,12 @@ export default function useMobile() {
     onMounted(() => {
         if (windowWidth.value <= 768) isMobile.value = true
         if (windowWidth.value <= 1200) isMenu.value = true
+        if (Cookies.get('sbg-cpa')) isCpa.value = true
     })
 
     onUnmounted(() => {
         window.removeEventListener('resize', handleResize)
     })
 
-    return { isMobile, isMenu }
+    return { isMobile, isMenu, isCpa }
 }

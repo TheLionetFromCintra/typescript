@@ -2,9 +2,11 @@
 import TheHeader from '@/components/common/headers/TheHeader.vue'
 import BenefitList from '@/applications/landing/components/benefits/BenefitList.vue'
 import CalculatorSkeleton from '@/components/common/calc/CalculatorSkeleton.vue'
+import useAutotype from '@/hooks/autotype'
 
 import { vLazyload } from '@/directives/vLazyload'
 import { defineAsyncComponent } from 'vue'
+const { typeValue, typeStatus } = useAutotype()
 
 const TheCalculator = defineAsyncComponent(
     () => import('@/components/common/calc/TheCalculator.vue')
@@ -13,9 +15,10 @@ const TheCalculator = defineAsyncComponent(
 interface Props {
     title: string
     desc: string
+    showAuto: boolean
 }
 
-const { title, desc } = defineProps<Props>()
+const { title, desc, showAuto } = defineProps<Props>()
 </script>
 
 <template>
@@ -35,6 +38,12 @@ const { title, desc } = defineProps<Props>()
             <div class="top d-flex justify-content-between">
                 <div class="desc">
                     <h1 v-html="title"></h1>
+                    <span class="colored" v-if="showAuto"
+                        >{{ typeValue
+                        }}<span class="cursor" :class="{ typing: typeStatus }"
+                            >&nbsp;</span
+                        ></span
+                    >
                     <p v-html="desc"></p>
                     <div class="button">
                         <router-link
@@ -64,7 +73,7 @@ const { title, desc } = defineProps<Props>()
     .main-img {
         position: absolute;
         left: 52%;
-        top: 120px;
+        bottom: 120px;
         width: 408px;
         height: 547px;
         z-index: -1;
@@ -137,31 +146,39 @@ const { title, desc } = defineProps<Props>()
     }
 
     .desc {
-        max-width: 468px;
+        max-width: 488px;
 
-        h1 {
-            margin-bottom: 35px;
+        h1,
+        .colored {
             font-weight: 600;
             font-size: 48px;
             line-height: 65px;
+        }
+        h1 {
             color: $primary-grey-dark;
 
             &::v-deep {
-                span,
-                .colored {
+                span {
                     font-weight: inherit;
-                }
-                .colored {
-                    display: block;
-                    color: $main_brand_1;
                 }
             }
         }
         p {
+            margin-top: 35px;
             max-width: 370px;
             font-size: 24px;
             line-height: 33px;
             color: $primary-black;
+        }
+
+        .colored {
+            display: block;
+            color: $main_brand_1;
+            white-space: nowrap;
+
+            @media (max-width: $tablet) {
+                white-space: initial;
+            }
         }
 
         .button {
@@ -203,7 +220,7 @@ const { title, desc } = defineProps<Props>()
 
             p {
                 max-width: 700px;
-                margin: 0 auto;
+                margin: 35px auto 0 auto;
             }
         }
     }
@@ -240,11 +257,12 @@ const { title, desc } = defineProps<Props>()
             width: 100%;
         }
         .desc {
-            h1 {
+            h1,
+            .colored {
                 font-size: 36px;
                 line-height: 44px;
-                margin-bottom: 42px;
             }
+
             p {
                 font-size: 16px;
                 line-height: 22px;

@@ -208,8 +208,8 @@ h5 {
             margin-bottom: 12px;
         }
         p {
-            font-size: 16px;
-            line-height: 24px;
+            font-size: 14px;
+            line-height: 22px;
             max-width: 198px;
             margin: 0 auto;
         }

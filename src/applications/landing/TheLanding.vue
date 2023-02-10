@@ -14,8 +14,11 @@ import PayList from './components/pay/PayList.vue'
 import StepList from './components/step/StepList.vue'
 import ReviewsSkeleton from './components/reviews/ReviewsSkeleton.vue'
 
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import useMobile from '@/hooks/mobile'
+import useComebacker from '@/hooks/comebacker'
+
+useComebacker()
 
 const ReviewsList = defineAsyncComponent(
     () => import('./components/reviews/ReviewsList.vue')
@@ -23,12 +26,9 @@ const ReviewsList = defineAsyncComponent(
 
 const { isMobile } = useMobile()
 
-const title = ref(
-    `Для получения займа под <span class="underline">0%</span> <span class="colored">заполните анкету</span>`
-)
-const desc = ref(
-    ` Получи деньги <span class="underline">быстро</span> и <span class="underline">просто</span> независимо от вашей кредитной истории`
-)
+const title = `Для получения займа под <span class="underline">0%</span>`
+
+const desc = ` Получи деньги <span class="underline">быстро</span> и <span class="underline">просто</span> независимо от вашей кредитной истории`
 
 const setObserver = function () {
     const allSections = document.querySelectorAll('.observed')
@@ -59,7 +59,12 @@ onMounted(() => {
 </script>
 
 <template>
-    <main-header class="main-header" :title="title" :desc="desc"></main-header>
+    <main-header
+        class="main-header"
+        :title="title"
+        :desc="desc"
+        :show-auto="true"
+    ></main-header>
 
     <section-wrapper title="Как это работает?" class="steps observed">
         <template #content>

@@ -404,3 +404,29 @@ body {
 .flex-column {
     flex-direction: column;
 }
+
+.cursor {
+    display: inline-block;
+    margin-left: 3px;
+    width: 5px;
+    background-color: $main_brand_1;
+    opacity: 1;
+    transition: opacity 0.3s linear;
+    animation: cursorBlink 0.8s infinite;
+}
+
+.cursor.typing {
+    animation: none;
+}
+
+@keyframes cursorBlink {
+    49% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    99% {
+        opacity: 0;
+    }
+}

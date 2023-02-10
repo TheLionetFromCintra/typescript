@@ -1,0 +1,55 @@
+<script setup lang="ts">
+const emit = defineEmits<{
+    (e: 'submit'): void
+}>()
+
+const submit = function () {
+    emit('submit')
+}
+</script>
+
+<template>
+    <form
+        @submit.prevent="submit"
+        novalidate
+        class="form d-flex flex-column align-items-center"
+    >
+        <div class="top">
+            <slot name="inputs"></slot>
+        </div>
+        <slot name="default"></slot>
+        <div class="btn d-flex justify-content-center">
+            <base-button class="button" type="submit" mode="yellow"
+                >Продолжить</base-button
+            >
+        </div>
+    </form>
+</template>
+
+<style scoped lang="scss">
+.form {
+    width: 100%;
+    max-width: 624px;
+    margin: 0 auto;
+}
+.top {
+    width: 100%;
+}
+.btn {
+    width: 100%;
+    margin-top: 60px;
+
+    button {
+        padding: 12px;
+        min-height: 46px;
+        max-width: 231px;
+        width: 100%;
+    }
+}
+
+@media (max-width: $mobile) {
+    .btn {
+        margin-top: 36px;
+    }
+}
+</style>
