@@ -43,7 +43,7 @@ const setPriceRange = function (num: number) {
 
 const changeAmount = function (e: InputEvent) {
     emit('update:modelValue', +e)
-    appStore.updateCalculator({ term: appStore.term, amount: +e })
+    appStore.updateCalculator({ term: appStore.calculator.term, amount: +e })
 }
 </script>
 

@@ -4,6 +4,7 @@ import Cookies from 'js-cookie'
 import StepWrapper from '../../layouts/StepWrapper.vue'
 import SkeletonForm from '../../layouts/SkeletonForm.vue'
 import TheCheckbox from '@/components/form/checkbox/TheCheckbox.vue'
+import ContactInfo from '../../components/ContactInfo.vue'
 
 import { computed, ref, onMounted, defineAsyncComponent } from 'vue'
 import { useDictionaryStore } from '@/stores/common/DictionaryStore'
@@ -56,7 +57,9 @@ onMounted(() => {
             <suspense>
                 <form-wrapper @submit="submit">
                     <template #inputs>
-                        <fieldset></fieldset>
+                        <fieldset class="inputs d-flex">
+                            <contact-info></contact-info>
+                        </fieldset>
                         <div class="checkbox-wrapper">
                             <the-checkbox
                                 v-if="acceptanceText"
@@ -91,6 +94,9 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
+.inputs {
+    gap: 0 24px;
+}
 .bg-animate {
     width: 100%;
 }
@@ -114,6 +120,11 @@ onMounted(() => {
 }
 
 @media (max-width: $mobile) {
+    .inputs {
+        gap: 24px 0;
+        flex-direction: column;
+    }
+
     .checkbox-wrapper,
     .checkbox-skeleton {
         margin-top: 36px;

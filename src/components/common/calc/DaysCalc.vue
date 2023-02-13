@@ -37,8 +37,8 @@ const filteredLoanDays: WritableComputedRef<number> = computed({
             }
             emit('update:modelValue', term)
             appStore.updateCalculator({
-                term: appStore.term,
-                amount: appStore.amount,
+                term: appStore.calculator.term,
+                amount: appStore.calculator.amount,
             })
             return
         }
@@ -58,8 +58,8 @@ const filteredLoanDays: WritableComputedRef<number> = computed({
 
         emit('update:modelValue', term)
         appStore.updateCalculator({
-            term: appStore.term,
-            amount: appStore.amount,
+            term: appStore.calculator.term,
+            amount: appStore.calculator.amount,
         })
     },
 })

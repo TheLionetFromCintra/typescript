@@ -26,7 +26,7 @@ onMounted(() => {
                 <span class="val">{{ appStore.loanPriceString }} ₽</span>
                 на
                 <span class="val"
-                    >{{ appStore.term.count }}
+                    >{{ appStore.calculator.term.count }}
                     {{ appStore.loanDaysString }}</span
                 >
             </div>
@@ -34,16 +34,19 @@ onMounted(() => {
                 <span>Сумма</span>
                 <span>{{ appStore.loanPriceString }} ₽</span>
             </div>
-            <sum-calc v-model="appStore.amount" :show-range-info="3"></sum-calc>
+            <sum-calc
+                v-model="appStore.calculator.amount"
+                :show-range-info="3"
+            ></sum-calc>
 
             <div class="mob-label" v-if="isMobile">
                 <span>Срок</span>
                 <span
-                    >{{ appStore.term.count }}
+                    >{{ appStore.calculator.term.count }}
                     {{ appStore.loanDaysString }}</span
                 >
             </div>
-            <days-calc v-model="appStore.term"></days-calc>
+            <days-calc v-model="appStore.calculator.term"></days-calc>
 
             <div class="d-flex justify-content-center btn">
                 <base-button :link="true" to="primary" mode="yellow"

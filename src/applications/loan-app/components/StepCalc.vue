@@ -32,7 +32,7 @@ const setInputWidth = function (input: any) {
         length = input.value.length
     }
     if (input.value.length === 1 || input.value.length === 0) {
-        length = 2
+        length = 1.5
     }
     input.setAttribute('size', String(length - 0.5))
 }
@@ -77,12 +77,13 @@ const saveResult = function () {
     setInputWidth(days.value)
 
     if (+calcSum.value === 0)
-        calcSum.value = price(appStore.amount).split(' ')[0]
+        calcSum.value = price(appStore.calculator.amount).split(' ')[0]
 
-    if (+calcDays.value === 0) calcDays.value = String(appStore.term.count)
+    if (+calcDays.value === 0)
+        calcDays.value = String(appStore.calculator.term.count)
 
     //new days
-    if (+calcDays.value !== +appStore.term.count) calcNewDays()
+    if (+calcDays.value !== +appStore.calculator.term.count) calcNewDays()
 
     //new store days
     appStore.updateCalculator({
@@ -100,10 +101,13 @@ onMounted(() => {
 
     appStore.initCalculator()
 
-    calcSum.value = price(appStore.amount).split(' ')[0]
-    calcDays.value = String(appStore.term.count)
-    calcType.value = appStore.term.type
-    calcDate.value = date(appStore.term.count, appStore.term.type)
+    calcSum.value = price(appStore.calculator.amount).split(' ')[0]
+    calcDays.value = String(appStore.calculator.term.count)
+    calcType.value = appStore.calculator.term.type
+    calcDate.value = date(
+        appStore.calculator.term.count,
+        appStore.calculator.term.type
+    )
 })
 </script>
 
