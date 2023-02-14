@@ -71,10 +71,6 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    showIcon: {
-        type: Boolean,
-        default: false,
-    },
     autoTab: {
         type: String,
         default: '',
@@ -82,6 +78,10 @@ const props = defineProps({
     valueWithoutMask: {
         type: Boolean,
         default: false,
+    },
+    maxLength: {
+        type: [String, Number],
+        default: '',
     },
     checkMaskPosition: {
         type: Function,
@@ -127,6 +127,7 @@ const inputMode = computed((): InputMode => {
 
 const field = ref('')
 const isTabbed = ref(false)
+const showIcon = ref(false)
 
 const input = ref(null)
 
@@ -134,10 +135,84 @@ onMounted(() => {
     field.value = props.modelValue ?? ''
 })
 
+//VALIDATION
+const SEVEN = '+# ### ### ## ##'
+const EIGHT = '# ### ### ## ##'
+
+const maxlength = ref(16)
+const phoneMask = ref('+# ### ### ## ##')
+
+const checkEmail = function (value: string) {
+    if (!value) return true
+
+    const mailRegExp = new RegExp(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    )
+    return mailRegExp.test(value)
+}
+
+const checkPhone = function (value: string) {
+    if (!value) return true
+
+    const onlyNumbers = String(value).replace(/[^\d]/g, '')
+
+    return onlyNumbers.length >= 11 && onlyNumbers[1] === '9'
+}
+
+const setPhoneMask = function (v: string) {
+    switch (v[0]) {
+        case undefined:
+        case '7': {
+            phoneMask.value = SEVEN
+            maxlength.value = 16
+            break
+        }
+        case '8': {
+            phoneMask.value = EIGHT
+            maxlength.value = 15
+            break
+        }
+        case '+': {
+            if (v[1] === undefined || v[1] === '7') {
+                break
+            } else if (v[1] === '8') {
+                phoneMask.value = EIGHT
+                maxlength.value = 15
+                break
+            } else v = '+7' + v.substr(1)
+            break
+        }
+        default: {
+            v = '+7' + v.substr(1)
+            phoneMask.value = SEVEN
+            maxlength.value = 16
+        }
+    }
+
+    return (v = setMask(v, phoneMask.value))
+}
+//--VALIDATION
+
 const inputEvent = function (e: Event) {
     let v = (e.target as HTMLInputElement).value
 
-    field.value = v
+    if (
+        (props.type === 'email' && checkEmail(v) && v !== '') ||
+        (props.type === 'tel' && checkPhone(v) && v !== '')
+    ) {
+        showIcon.value = true
+    } else {
+        showIcon.value = false
+    }
+
+    if (props.type === 'tel') {
+        v = v.replace(/[A-Za-zА-Яа-яЁё]/g, '')
+        const newVal = setPhoneMask(v)
+
+        field.value = newVal ?? ''
+    } else {
+        field.value = v
+    }
 
     let caretPos = 0
 
@@ -172,7 +247,7 @@ const focusEvent = function () {
     emit('focus')
 }
 
-const blurEvent = function () {
+const blurEvent = function (e: Event) {
     emit('blur')
 }
 </script>
@@ -186,7 +261,7 @@ const blurEvent = function () {
                     :class="{
                         success: icon && showIcon,
                         error: error,
-                        shakeAnimation: error,
+                        field_error: error,
                     }"
                     :type="props.type"
                     ref="input"
@@ -198,6 +273,7 @@ const blurEvent = function () {
                     :autocorrect="props.autocorrect"
                     :pattern="computedPattern"
                     :inputmode="inputMode"
+                    :maxlength="maxlength"
                     @input="inputEvent"
                     @focus="focusEvent"
                     @blur="blurEvent"
@@ -293,5 +369,10 @@ input {
     top: 50%;
     right: 12px;
     transform: translateY(-50%);
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.6;
 }
 </style>

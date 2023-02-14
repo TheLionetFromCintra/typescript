@@ -8,16 +8,17 @@ import type { App, Calc } from '@/types/app/app'
 
 export const useAppStore = defineStore('AppStore', {
     state: (): App => ({
+        createdAt: 'test',
         data: {
             contactData: {
                 addrcity: '',
                 birthday: '',
-                email: '666',
+                email: '',
                 firstname: '',
                 gender: '',
                 lastname: '',
                 patronymic: '',
-                phone: '555',
+                phone: '',
             },
             passportData: {
                 passportissuecode: '',

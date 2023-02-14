@@ -1,4 +1,5 @@
 export interface App {
+    createdAt: string
     data: {
         contactData: ContactData
         passportData: PassportData

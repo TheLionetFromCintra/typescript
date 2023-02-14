@@ -13,6 +13,7 @@ class ValidationWithFocus extends Validation {
         this.selector &&
             setTimeout(() => {
                 const element = document.querySelector(this.selector)
+
                 if (!element) return
 
                 element.focus()
@@ -22,7 +23,7 @@ class ValidationWithFocus extends Validation {
                         behavior: 'smooth',
                     })
 
-                const shakeClassName = 'shake-animation'
+                const shakeClassName = 'shakeAnimation'
                 if (element.classList.contains(shakeClassName)) return
 
                 element.classList.add(shakeClassName)

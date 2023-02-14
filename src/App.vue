@@ -6,6 +6,7 @@ const dictionaryStore = useDictionaryStore()
 
 onMounted(() => {
     document.querySelector('.preloader')?.remove()
+    document.querySelector('html')?.classList.remove('hidden')
     dictionaryStore.init()
 })
 </script>

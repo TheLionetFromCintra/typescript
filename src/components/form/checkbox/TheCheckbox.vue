@@ -9,6 +9,7 @@ const update = function (e: Event) {
 
 interface Props {
     desc: string
+    error: boolean
     modelValue: boolean
 }
 
@@ -18,7 +19,12 @@ const { desc, modelValue } = defineProps<Props>()
 <template>
     <div class="checkbox">
         <label class="d-flex align-items-start justify-content-center">
-            <input type="checkbox" @change="update" :checked="modelValue" />
+            <input
+                type="checkbox"
+                @change="update"
+                :checked="modelValue"
+                :class="{ error: error }"
+            />
             <div class="description" v-html="desc"></div>
         </label>
     </div>
@@ -58,9 +64,9 @@ input {
         background-position: center center;
         background-size: 60%;
     }
-    // &.error {
-    //     border-color: #eb5757;
-    // }
+    &.error {
+        border-color: $invalid;
+    }
 }
 .description {
     font-size: 12px;

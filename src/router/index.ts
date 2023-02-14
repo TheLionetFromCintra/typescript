@@ -25,6 +25,20 @@ const router = createRouter({
             name: 'LoanPrimary',
             component: ThePrimary,
         },
+        {
+            path: '/anticharge',
+            name: 'Anticharge',
+            component: ThePrimary,
+            beforeEnter: (to, _) => {
+                if (to.name === 'Anticharge') {
+                    console.log('nice')
+                    // await anticharge(to.query)
+                    // await store.dispatch('application/update')
+                }
+
+                // return false
+            },
+        },
         { path: '/:notFound(.*)', name: '404', component: NotFound },
     ],
     scrollBehavior() {
