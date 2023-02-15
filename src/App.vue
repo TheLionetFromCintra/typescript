@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useDictionaryStore } from '@/stores/common/DictionaryStore'
+import { useAppStore } from '@/stores/app/AppStore'
 
 const dictionaryStore = useDictionaryStore()
+const appStore = useAppStore()
 
 onMounted(() => {
     document.querySelector('.preloader')?.remove()
     document.querySelector('html')?.classList.remove('hidden')
+
     dictionaryStore.init()
+    appStore.updateData()
 })
 </script>
 

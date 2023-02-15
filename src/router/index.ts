@@ -1,9 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Cookies from 'js-cookie'
+import anticharge from '@/api/anticharge'
+
+import { useAppStore } from '@/stores/app/AppStore'
 
 import TheLanding from '@/applications/landing/TheLanding.vue'
 import ThePrimary from '@/applications/loan-app/views/primary/ThePrimary.vue'
-import NotFound from '@/applications/404/NotFound.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,21 +31,43 @@ const router = createRouter({
             path: '/anticharge',
             name: 'Anticharge',
             component: ThePrimary,
-            beforeEnter: (to, _) => {
-                if (to.name === 'Anticharge') {
-                    console.log('nice')
-                    // await anticharge(to.query)
-                    // await store.dispatch('application/update')
-                }
-
-                // return false
-            },
         },
-        { path: '/:notFound(.*)', name: '404', component: NotFound },
+        {
+            path: '/contact',
+            name: 'LoanContact',
+            component: () =>
+                import('@/applications/loan-app/views/contact/TheContact.vue'),
+        },
+        {
+            path: '/auth',
+            name: 'LoanAuth',
+            component: () =>
+                import('@/applications/loan-app/views/auth/LoanAuth.vue'),
+        },
+        {
+            path: '/:notFound(.*)',
+            name: '404',
+            component: () => import('@/applications/404/NotFound.vue'),
+        },
     ],
     scrollBehavior() {
         return { top: 0, behavior: 'smooth' }
     },
+})
+
+router.beforeEach(async (to) => {
+    const appStore = useAppStore()
+
+    if (to.name === 'Anticharge') {
+        await anticharge(to.query)
+        await appStore.updateData()
+    }
+
+    if (to.name === 'LoanContact') {
+        if (!appStore.data.contactData.phone) {
+            return { name: 'LoanPrimary' }
+        }
+    }
 })
 
 export default router

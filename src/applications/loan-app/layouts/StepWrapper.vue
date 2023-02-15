@@ -15,7 +15,7 @@ interface Props {
     stepCurrent: number
     stepMax: number
     stepTitle: string
-    mobTitle: string
+    mobTitle?: string
 }
 
 const { stepCurrent, stepMax, stepTitle, mobTitle } = defineProps<Props>()
@@ -48,7 +48,9 @@ const progressBar = computed(() => {
                     <div class="bar" :style="`width: ${progressBar}%`"></div>
                 </div>
 
-                <h3 class="mob-title" v-if="isMobile">{{ mobTitle }}</h3>
+                <h3 class="mob-title" v-if="isMobile && mobTitle">
+                    {{ mobTitle }}
+                </h3>
                 <slot name="form"></slot>
             </div>
         </div>
@@ -115,7 +117,7 @@ const progressBar = computed(() => {
     }
     @media (max-width: $mobile) {
         &__header {
-            padding: 24px 24px 0 24px;
+            padding: 35px 24px 0 24px;
             margin-bottom: 36px;
         }
     }

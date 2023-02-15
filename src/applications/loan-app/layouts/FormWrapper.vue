@@ -47,9 +47,23 @@ const submit = function () {
     }
 }
 
+.contact-form {
+    .btn {
+        justify-content: flex-start;
+        margin-top: 24px;
+    }
+}
+
 @media (max-width: $mobile) {
     .btn {
         margin-top: 36px;
+    }
+
+    .contact-form {
+        .btn {
+            justify-content: center;
+            margin-top: 36px;
+        }
     }
 }
 </style>

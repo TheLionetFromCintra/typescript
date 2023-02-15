@@ -11,8 +11,7 @@ import TheField from '@/components/form/fields/TheField.vue'
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
 
-// import stat from '@/api/stat'
-// import anticharge from '@/api/anticharge'
+import stat from '@/api/stat'
 import Storage from '@/ext/storage/storage'
 
 import {
@@ -29,9 +28,10 @@ import { useAppStore } from '@/stores/app/AppStore'
 import useMobile from '@/hooks/mobile'
 import useComebacker from '@/hooks/comebacker'
 
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 
 const FormWrapper = defineAsyncComponent(
     () => import('../../layouts/FormWrapper.vue')
@@ -99,19 +99,19 @@ const emailFocus = function () {
     if (emailFocused.value) return
 
     emailFocused.value = true
-    // stat('email')
+    stat('email')
 }
 const phoneFocus = function () {
     if (phoneFocused.value) return
 
     phoneFocused.value = true
-    // stat('phone')
+    stat('phone')
 }
 
 const { phone, email } = appStore.data.contactData
 
-form.phone = phone
-form.email = email
+form.phone = phone ?? ''
+form.email = email ?? ''
 
 // if (this.form.phone || this.user.contactData.id) return
 
@@ -125,8 +125,30 @@ const filterErrors = function (obj: object) {
     })
 }
 
-const submit = function () {
+const submit = async function () {
     console.log('submit')
+
+    const { checkPhoneByCode, noValid } = await appStore.send('info', {
+        contactData: form,
+    })
+
+    if (noValid && Object.keys(noValid)) {
+        const formErrors = errors
+
+        formErrors.phone =
+            (noValid.phone === false && 'Невалидное значение') || ''
+        formErrors.email =
+            (noValid.email === false && 'Невалидное значение') || ''
+
+        return
+    }
+
+    // if (!checkPhoneByCode) {
+    //     router.push({ name: 'LoanContact' })
+    // } else {
+    //     Storage.set('user_phone', form.phone)
+    //     router.push({ name: 'LoanAuth' })
+    // }
 }
 
 const validateForm = function () {
@@ -158,7 +180,7 @@ onMounted(() => {
 //--HOOKS
 
 //ANTICHARGE
-const isAnticharge = computed(() => {
+const isAnticharge = computed((): boolean => {
     return route.name === 'Anticharge'
 })
 
@@ -190,6 +212,7 @@ if (isAnticharge.value) {
                                 v-autofocus
                                 @focus="phoneFocus"
                                 :error="errors.phone"
+                                :disabled="!!appStore.data.contactData.id"
                             ></the-field>
                             <the-field
                                 v-model.trim="form.email"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import type { PropType } from 'vue'
+import setDate from '@/helpers/date/setDate'
 
 import setMask from '@/helpers/string/setMask'
 
@@ -76,6 +77,10 @@ const props = defineProps({
         default: '',
     },
     valueWithoutMask: {
+        type: Boolean,
+        default: false,
+    },
+    dateType: {
         type: Boolean,
         default: false,
     },
@@ -196,6 +201,10 @@ const setPhoneMask = function (v: string) {
 const inputEvent = function (e: Event) {
     let v = (e.target as HTMLInputElement).value
 
+    //forbid letters
+    if (props.pattern) v = v.replace(/[A-Za-zА-Яа-яЁё]/g, '')
+
+    //show icon if phone or email
     if (
         (props.type === 'email' && checkEmail(v) && v !== '') ||
         (props.type === 'tel' && checkPhone(v) && v !== '')
@@ -204,26 +213,33 @@ const inputEvent = function (e: Event) {
     } else {
         showIcon.value = false
     }
+    //--show icon if phone or email
 
+    //phone mask
     if (props.type === 'tel') {
-        v = v.replace(/[A-Za-zА-Яа-яЁё]/g, '')
         const newVal = setPhoneMask(v)
-
         field.value = newVal ?? ''
     } else {
         field.value = v
     }
 
+    //mask in general
     let caretPos = 0
 
     if (props.mask) {
         const beforeMask = v
-        v = setMask(v, props.mask)
+        field.value = setMask(v, props.mask)
         caretPos = props.checkMaskPosition(beforeMask, v, caretPos)
     } else {
         caretPos = v.length
     }
 
+    //if date type
+    if (props.dateType) {
+        field.value = setDate(field.value)
+    }
+
+    //autofocus next field
     if (
         props.autoTab &&
         props.mask &&
@@ -240,21 +256,21 @@ const inputEvent = function (e: Event) {
     if (props.mask && props.valueWithoutMask)
         v = String(v).replace(/[^\d]/g, '')
 
-    props.modelValue !== v && emit('update:modelValue', v)
+    props.modelValue !== v && emit('update:modelValue', field.value)
 }
 
 const focusEvent = function () {
     emit('focus')
 }
 
-const blurEvent = function (e: Event) {
+const blurEvent = function () {
     emit('blur')
 }
 </script>
 
 <template>
     <div class="field">
-        <label>
+        <label :class="{ disabled: props.disabled }">
             <span class="title">{{ props.label }}</span>
             <div class="wrapper">
                 <input
@@ -273,7 +289,9 @@ const blurEvent = function (e: Event) {
                     :autocorrect="props.autocorrect"
                     :pattern="computedPattern"
                     :inputmode="inputMode"
-                    :maxlength="maxlength"
+                    :maxlength="
+                        props.type === 'tel' ? maxlength : props.maxLength
+                    "
                     @input="inputEvent"
                     @focus="focusEvent"
                     @blur="blurEvent"
