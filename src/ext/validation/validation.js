@@ -19,8 +19,8 @@ class Validation {
     static NO_FILTHY = 'no-filthy'
 
     static REQUIRED_MSG = 'Поле обязательно'
-    static MIN_MSG = 'Минимальное количество символов - {{0}}'
-    static MAX_MSG = 'Максимальное количество символов - {{0}}'
+    static MIN_MSG = 'Мин. кол-во символов - {{0}}'
+    static MAX_MSG = 'Макс. кол-во символов - {{0}}'
     static PHONE_MSG = 'Номер должен содержать 11 цифр'
     static MOBILE_MSG = 'Некорректный формат номера телефона'
     static EMAIL_MSG = 'Некорректный формат почты'

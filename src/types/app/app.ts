@@ -36,7 +36,6 @@ export interface PassportData {
     passportnumber: string
     passportseries: string
     passportdate: string
-    passportaddress: string
     id?: number
 }
 

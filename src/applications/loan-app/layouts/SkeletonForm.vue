@@ -20,4 +20,21 @@
         height: 46px;
     }
 }
+
+.contact-skeleton {
+    .btn-wrapper {
+        margin-top: 24px;
+        justify-content: flex-start;
+
+        @media (max-width: $mobile) {
+            margin-top: 36px;
+            justify-content: center;
+        }
+    }
+}
+.card-skeleton {
+    .btn-wrapper {
+        margin-top: 36px;
+    }
+}
 </style>

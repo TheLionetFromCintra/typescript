@@ -39,7 +39,7 @@ const FormWrapper = defineAsyncComponent(
 
 useComebacker()
 
-const { validate } = useValidation()
+const { validate, filterErrors } = useValidation()
 
 //CHECKBOXES
 const dictionaryStore = useDictionaryStore()
@@ -118,13 +118,6 @@ form.email = email ?? ''
 //--FORM INPUTS
 
 //VALIDATION AND SUBMITTING FORM
-const filterErrors = function (obj: object) {
-    Object.entries(obj).forEach((entry: Array<string>) => {
-        const [key, value] = entry
-        errors[key] = value
-    })
-}
-
 const submit = async function () {
     console.log('submit')
 
@@ -156,7 +149,7 @@ const validateForm = function () {
 
     validateFields = validate(form, formRules)
 
-    filterErrors(validateFields.formErrors)
+    filterErrors(validateFields.formErrors, errors)
     ;((autoPaymentText.value && autoPayment.value) || !autoPaymentText.value) &&
         validateFields.isValid &&
         agreement.value &&
@@ -167,7 +160,7 @@ watch(
     () => form,
     (newVal) => {
         validateFields = validate(newVal, formRules, false)
-        filterErrors(validateFields.formErrors)
+        filterErrors(validateFields.formErrors, errors)
     },
     { deep: true }
 )
@@ -175,7 +168,7 @@ watch(
 
 //HOOKS
 onMounted(() => {
-    if (isCpa) agreement.value = true
+    if (isCpa.value) agreement.value = true
 })
 //--HOOKS
 
@@ -287,12 +280,11 @@ if (isAnticharge.value) {
 }
 
 @media (max-width: $mobile) {
-    @media (max-width: $mobile) {
-        .inputs {
-            gap: 24px 0;
-            flex-direction: column;
-        }
+    .inputs {
+        gap: 24px 0;
+        flex-direction: column;
     }
+
     .checkbox-wrapper,
     .checkbox-skeleton {
         margin-top: 36px;

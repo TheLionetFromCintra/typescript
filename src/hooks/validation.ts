@@ -26,7 +26,12 @@ export default function useValidation() {
         return data
     }
 
-    const validate = function (form: any, formRules: any, focus = true) {
+    const validate = function (
+        form: any,
+        formRules: any,
+        customErrors: any,
+        focus = true
+    ) {
         formIsSubmit.value = true
         const selector = focus ? '.field_error' : null
 
@@ -43,5 +48,12 @@ export default function useValidation() {
         }
     }
 
-    return { validate }
+    const filterErrors = function (obj: object, errors: object) {
+        Object.entries(obj).forEach((entry: Array<string>) => {
+            const [key, value] = entry
+            errors[key] = value
+        })
+    }
+
+    return { validate, filterErrors }
 }

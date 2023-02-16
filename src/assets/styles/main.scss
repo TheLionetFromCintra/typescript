@@ -431,3 +431,15 @@ body {
         opacity: 0;
     }
 }
+
+.error-msg {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 14px;
+    color: $invalid;
+
+    @media (max-width: $mobile) {
+        margin-top: 4px;
+    }
+}

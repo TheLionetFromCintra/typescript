@@ -39,6 +39,12 @@ const router = createRouter({
                 import('@/applications/loan-app/views/contact/TheContact.vue'),
         },
         {
+            path: '/card',
+            name: 'LoanCard',
+            component: () =>
+                import('@/applications/loan-app/views/card/TheCard.vue'),
+        },
+        {
             path: '/auth',
             name: 'LoanAuth',
             component: () =>
@@ -66,6 +72,26 @@ router.beforeEach(async (to) => {
     if (to.name === 'LoanContact') {
         if (!appStore.data.contactData.phone) {
             return { name: 'LoanPrimary' }
+        }
+    }
+
+    if (to.name === 'LoanCard') {
+        const { allow } = to.params
+
+        const {
+            passportData: { passportnumber },
+            isSubscribed,
+            isSigned,
+        } = appStore.data
+
+        if (isSubscribed) {
+            return { name: 'PersonalProfile' }
+        }
+
+        if ((isSigned && allow) || passportnumber) {
+            return
+        } else {
+            return { name: 'LoanContact' }
         }
     }
 })

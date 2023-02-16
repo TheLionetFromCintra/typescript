@@ -47,11 +47,10 @@ export const useAppStore = defineStore('AppStore', {
                 phone: '111',
             },
             passportData: {
-                passportissuecode: '',
-                passportnumber: '',
+                passportcode: '',
+                passportnumber: '123456',
                 passportseries: '',
                 passportdate: '',
-                passportaddress: '',
             },
             cardData: {
                 cardnumber: '',

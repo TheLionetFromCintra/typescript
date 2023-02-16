@@ -54,15 +54,22 @@ const submit = function () {
     }
 }
 
-@media (max-width: $mobile) {
+.card-form {
+    max-width: 100%;
     .btn {
+        margin-top: 36px;
+    }
+}
+
+@media (max-width: $mobile) {
+    .btn,
+    .contact-form .btn {
         margin-top: 36px;
     }
 
     .contact-form {
         .btn {
             justify-content: center;
-            margin-top: 36px;
         }
     }
 }

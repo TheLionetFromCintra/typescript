@@ -29,7 +29,7 @@ const props = defineProps({
         default: '',
     },
     type: {
-        type: String as PropType<InputMode>,
+        type: String as PropType<InputMode | 'password'>,
         default: 'text',
     },
     mask: {
@@ -122,7 +122,7 @@ const computedPattern = computed((): string | undefined => {
     return props.pattern ? '[0-9]*' : ''
 })
 
-const inputMode = computed((): InputMode => {
+const inputMode = computed((): InputMode | 'password' => {
     if (props.mask) {
         return 'numeric'
     }
@@ -256,7 +256,7 @@ const inputEvent = function (e: Event) {
     if (props.mask && props.valueWithoutMask)
         v = String(v).replace(/[^\d]/g, '')
 
-    props.modelValue !== v && emit('update:modelValue', field.value)
+    props.modelValue !== v && emit('update:modelValue', v)
 }
 
 const focusEvent = function () {
@@ -368,18 +368,6 @@ input {
     }
 }
 
-.error-msg {
-    display: block;
-    margin-top: 8px;
-    font-size: 12px;
-    line-height: 14px;
-    color: $invalid;
-
-    @media (max-width: $mobile) {
-        margin-top: 4px;
-    }
-}
-
 .icon {
     max-width: 16px;
     height: 16px;
@@ -392,5 +380,72 @@ input {
 .disabled {
     pointer-events: none;
     opacity: 0.6;
+}
+
+.card__field {
+    .title {
+        margin-bottom: 10px;
+    }
+    input {
+        background: #fefeff;
+        border: 1px solid $primary-grey-dark;
+        border-radius: 10px;
+        padding: 12px 16px;
+        min-height: 48px;
+        max-height: 48px;
+    }
+
+    @media (max-width: $mobile) {
+        .title {
+            margin-bottom: 6px;
+        }
+        input {
+            padding: 12px;
+            min-height: 38px;
+            max-height: 38px;
+            font-size: 12px;
+            line-height: 16px;
+        }
+    }
+
+    &-back {
+        display: flex;
+        justify-content: flex-end;
+        .title {
+            color: #fefeff;
+        }
+        input {
+            max-width: 84px;
+            min-width: 84px;
+            width: 84px;
+
+            @media (max-width: $mobile) {
+                max-width: 60px;
+                min-width: 60px;
+                width: 60px;
+            }
+        }
+    }
+
+    &-second {
+        input {
+            text-transform: uppercase;
+        }
+    }
+
+    &-last {
+        max-width: 104px;
+        min-width: 104px;
+        width: 104px;
+    }
+
+    &-back input,
+    &-last {
+        @media (max-width: $mobile) {
+            max-width: 60px;
+            min-width: 60px;
+            width: 60px;
+        }
+    }
 }
 </style>
