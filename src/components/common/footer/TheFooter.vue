@@ -113,6 +113,57 @@ const footerDesc = computed(() => {
     min-width: 198px;
 }
 
+.account__footer {
+    margin-top: 0;
+    .container {
+        max-width: 100%;
+    }
+    .description {
+        background-color: #f3f3f3;
+        padding: 0 95px;
+        .container {
+            padding: 58px 0 0 0;
+            border-top: 1px solid #8f8f8f;
+        }
+    }
+
+    .bottom {
+        .container {
+            padding: 0 95px;
+        }
+    }
+
+    @media (max-width: $tablet) {
+        .description {
+            background-color: $sub-background;
+            padding: 58px 0;
+            .container {
+                padding: 0 40px;
+                border-top: none;
+            }
+        }
+        .bottom {
+            .container {
+                padding: 0 40px;
+            }
+        }
+    }
+
+    @media (max-width: $mobile) {
+        .description {
+            padding: 40px 0;
+            .container {
+                padding: 0 24px;
+            }
+        }
+        .bottom {
+            .container {
+                padding: 0 24px;
+            }
+        }
+    }
+}
+
 @media (max-width: $tablet) {
     .bottom {
         padding: 64px 0;
@@ -124,6 +175,9 @@ const footerDesc = computed(() => {
         .container {
             padding: 0 24px;
         }
+    }
+    .account__footer {
+        margin-top: 0;
     }
     .description {
         padding: 28px 0 46px 0;

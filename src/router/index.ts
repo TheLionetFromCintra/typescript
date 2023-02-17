@@ -51,6 +51,29 @@ const router = createRouter({
                 import('@/applications/loan-app/views/auth/LoanAuth.vue'),
         },
         {
+            path: '/lk',
+            component: () => import('@/applications/lk/TheAccount.vue'),
+            redirect: '/lk/profile',
+            name: 'PersonalAccount',
+            children: [
+                {
+                    path: 'profile',
+
+                    component: () =>
+                        import('@/applications/lk/views/TheProfile.vue'),
+                },
+                // { path: "edit", component: () => import("@/components/pages/lk/subpages/EditPage") },
+                // { path: "save-changes", component: () => import("@/components/pages/lk/subpages/SavePage") },
+                {
+                    path: 'documents',
+
+                    component: () =>
+                        import('@/applications/lk/views/TheDocuments.vue'),
+                },
+                // { path: "offers", component: () => import("@/components/pages/lk/subpages/OffersPage") },
+            ],
+        },
+        {
             path: '/:notFound(.*)',
             name: '404',
             component: () => import('@/applications/404/NotFound.vue'),
@@ -85,13 +108,23 @@ router.beforeEach(async (to) => {
         } = appStore.data
 
         if (isSubscribed) {
-            return { name: 'PersonalProfile' }
+            return { name: 'PersonalAccount' }
         }
 
         if ((isSigned && allow) || passportnumber) {
             return
         } else {
             return { name: 'LoanContact' }
+        }
+    }
+
+    if (to.path.includes('lk')) {
+        if (!Cookies.get('sbg-in')) {
+            return { name: 'landing' }
+        } else {
+            // await Store.dispatch('personal/getInfo')
+            // await Store.dispatch('application/update')
+            return
         }
     }
 })

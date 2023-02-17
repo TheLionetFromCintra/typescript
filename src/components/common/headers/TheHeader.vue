@@ -1,10 +1,30 @@
 <script setup lang="ts">
+import Cookies from 'js-cookie'
+import MobMenu from '../menu/MobMenu.vue'
+import { ref } from 'vue'
+
 import { useDictionaryStore } from '@/stores/common/DictionaryStore'
 import useMobile from '@/hooks/mobile'
 
 const { isMenu } = useMobile()
 
 const dictionaryStore = useDictionaryStore()
+
+const activeMenu = ref(false)
+
+const toggleMenu = function () {
+    activeMenu.value = !activeMenu.value
+
+    if (activeMenu.value) {
+        document.querySelector('html')?.classList.add('hidden')
+    } else {
+        document.querySelector('html')?.classList.remove('hidden')
+    }
+}
+
+const closeMenu = function () {
+    activeMenu.value = false
+}
 </script>
 
 <template>
@@ -28,13 +48,15 @@ const dictionaryStore = useDictionaryStore()
             <base-button
                 class="link"
                 :link="true"
-                to="/primary"
+                :to="`${Cookies.get('sbg-in') ? '/lk' : '/primary'}`"
                 mode="black"
                 v-if="!isMenu && $route.name === 'landing'"
-                >Получить займ</base-button
+                >{{
+                    Cookies.get('sbg-in') ? 'Личный кабинет' : 'Получить займ'
+                }}</base-button
             >
-            <div class="header__mobile" v-if="isMenu">
-                <div class="burger">
+            <div class="header__mobile" v-if="isMenu" @click="toggleMenu">
+                <div class="burger" :class="{ active: activeMenu }">
                     <span class="line line1"></span>
                     <span class="line line2"></span>
                     <span class="line line3"></span>
@@ -42,12 +64,16 @@ const dictionaryStore = useDictionaryStore()
             </div>
         </div>
     </header>
+
+    <mob-menu :is-active="activeMenu" :close-menu="closeMenu"></mob-menu>
 </template>
 
 <style scoped lang="scss">
 .header {
     color: $primary-black;
     width: 100%;
+    position: relative;
+    z-index: 1001;
 
     @media (max-width: $mobile) {
         padding: 0;
@@ -81,34 +107,38 @@ const dictionaryStore = useDictionaryStore()
         justify-content: flex-end;
     }
 
-    &__burger {
-        width: 24px;
-        height: 18px;
-        cursor: pointer;
-        display: block;
-        position: relative;
-
-        &::before,
-        &::after,
-        & > span {
-            background-color: $primary-black;
-            height: 2px;
-            border-radius: 2px;
-            width: 100%;
-            content: '';
+    .burger {
+        .line {
             display: block;
-            position: absolute;
-            left: 0;
+            height: 2px;
+            width: 24px;
+            background-color: $primary-black;
         }
 
-        &::before {
-            top: 0;
+        .line1 {
+            transform-origin: 0% 0%;
+            transition: transform 0.4s ease-in-out;
         }
-        &::after {
-            bottom: 0;
+
+        .line2 {
+            transition: transform 0.2s ease-in-out;
         }
-        & > span {
-            top: calc(50% - 1px);
+
+        .line3 {
+            transform-origin: 0% 100%;
+            transition: transform 0.4s ease-in-out;
+        }
+        .line + .line {
+            margin-top: 6px;
+        }
+        &.active .line1 {
+            transform: rotate(45deg);
+        }
+        &.active .line2 {
+            transform: scaleY(0);
+        }
+        &.active .line3 {
+            transform: rotate(-45deg);
         }
     }
 }

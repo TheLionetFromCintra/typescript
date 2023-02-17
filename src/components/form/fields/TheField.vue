@@ -84,6 +84,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    cardType: {
+        type: Boolean,
+        default: false,
+    },
     maxLength: {
         type: [String, Number],
         default: '',
@@ -237,6 +241,14 @@ const inputEvent = function (e: Event) {
     //if date type
     if (props.dateType) {
         field.value = setDate(field.value)
+    }
+
+    //if card type
+    if (props.cardType) {
+        const [month] = field.value.split('/')
+        if (+month > 12 || (month.length === 2 && +month === 0)) {
+            field.value = '12'
+        }
     }
 
     //autofocus next field
@@ -393,6 +405,10 @@ input {
         padding: 12px 16px;
         min-height: 48px;
         max-height: 48px;
+        &.error {
+            border: 2px solid;
+            border-color: $invalid;
+        }
     }
 
     @media (max-width: $mobile) {
@@ -400,7 +416,7 @@ input {
             margin-bottom: 6px;
         }
         input {
-            padding: 12px;
+            padding: 10px;
             min-height: 38px;
             max-height: 38px;
             font-size: 12px;

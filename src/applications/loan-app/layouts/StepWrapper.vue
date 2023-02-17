@@ -28,7 +28,9 @@ const progressBar = computed(() => {
 <template>
     <div class="poll">
         <div class="wrapper">
-            <the-header class="poll__header"></the-header>
+            <div class="poll__header">
+                <the-header></the-header>
+            </div>
 
             <h1 class="subtitle" v-if="!isMobile">
                 {{
