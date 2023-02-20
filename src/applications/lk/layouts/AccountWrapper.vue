@@ -8,8 +8,9 @@ const { title } = defineProps<Props>()
 
 <template>
     <h1 class="subtitle subtitle--account">{{ title }}</h1>
-    <slot name="desc"></slot>
+
     <div class="content">
+        <slot name="desc"></slot>
         <slot name="content"></slot>
     </div>
 </template>

@@ -38,7 +38,13 @@ const closeMenu = function () {
                     class="logo sub"
                 ></router-link>
             </div>
-            <div class="phone" v-if="!isMenu && $route.name === 'landing'">
+            <div
+                class="phone"
+                v-if="
+                    !isMenu &&
+                    ($route.name === 'landing' || $route.name === '404')
+                "
+            >
                 <a
                     class="link-hover"
                     :href="`tel:${dictionaryStore.phoneLink}`"
@@ -50,7 +56,10 @@ const closeMenu = function () {
                 :link="true"
                 :to="`${Cookies.get('sbg-in') ? '/lk' : '/primary'}`"
                 mode="black"
-                v-if="!isMenu && $route.name === 'landing'"
+                v-if="
+                    !isMenu &&
+                    ($route.name === 'landing' || $route.name === '404')
+                "
                 >{{
                     Cookies.get('sbg-in') ? 'Личный кабинет' : 'Получить займ'
                 }}</base-button

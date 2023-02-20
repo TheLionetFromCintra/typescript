@@ -14,12 +14,12 @@ const router = createRouter({
             path: '/',
             name: 'landing',
             component: TheLanding,
-            beforeEnter: (to, _) => {
-                if (!Cookies.get('sbg-cpa') && to.name === 'landing')
+            beforeEnter: () => {
+                if (!Cookies.get('sbg-cpa')) {
                     return { name: 'LoanPrimary' }
-
-                if (Cookies.get('sbg-cpa') && to.name !== 'landing')
-                    return false
+                } else {
+                    return
+                }
             },
         },
         {
@@ -58,19 +58,65 @@ const router = createRouter({
             children: [
                 {
                     path: 'profile',
-
                     component: () =>
                         import('@/applications/lk/views/TheProfile.vue'),
                 },
-                // { path: "edit", component: () => import("@/components/pages/lk/subpages/EditPage") },
-                // { path: "save-changes", component: () => import("@/components/pages/lk/subpages/SavePage") },
+                {
+                    path: 'edit',
+                    component: () =>
+                        import('@/applications/lk/views/TheEdit.vue'),
+                },
+                {
+                    path: 'save-changes',
+                    component: () =>
+                        import('@/applications/lk/views/SaveChanges.vue'),
+                },
                 {
                     path: 'documents',
-
                     component: () =>
                         import('@/applications/lk/views/TheDocuments.vue'),
                 },
-                // { path: "offers", component: () => import("@/components/pages/lk/subpages/OffersPage") },
+                {
+                    path: 'offers',
+                    component: () =>
+                        import('@/applications/lk/views/TheOffers.vue'),
+                },
+            ],
+        },
+        {
+            path: '/final',
+            name: 'LoanFinal',
+            component: () => import('@/applications/final/TheFinal.vue'),
+            beforeEnter: () => {
+                if (Cookies.get('sbg-cpa') && Cookies.get('sbg-in')) {
+                    return
+                } else {
+                    return { name: 'PersonalAccount' }
+                }
+            },
+        },
+        {
+            path: '/unsubscribe',
+            redirect: '/unsubscribe',
+            component: () =>
+                import('@/applications/unsubscribe/TheUnsubscribe.vue'),
+            children: [
+                {
+                    path: '/unsubscribe',
+                    name: 'Unsubscribe',
+                    component: () =>
+                        import(
+                            '@/applications/unsubscribe/views/UnsubMain.vue'
+                        ),
+                },
+                {
+                    path: '/unsubscribe/success',
+                    name: 'UnsubSuccess',
+                    component: () =>
+                        import(
+                            '@/applications/unsubscribe/views/UnsubSuccess.vue'
+                        ),
+                },
             ],
         },
         {

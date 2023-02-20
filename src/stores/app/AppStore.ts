@@ -41,7 +41,7 @@ export const useAppStore = defineStore('AppStore', {
                 birthday: '',
                 email: '',
                 firstname: '',
-                gender: '',
+                gender: '0',
                 lastname: '',
                 patronymic: '',
                 phone: '111',
@@ -49,13 +49,8 @@ export const useAppStore = defineStore('AppStore', {
             passportData: {
                 passportcode: '',
                 passportnumber: '123456',
-                passportseries: '',
+                passportseries: '1111',
                 passportdate: '',
-            },
-            cardData: {
-                cardnumber: '',
-                cardname: '',
-                carddate: '',
             },
             isSigned: false,
             isSubscribed: false,

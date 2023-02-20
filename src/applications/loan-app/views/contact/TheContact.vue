@@ -221,8 +221,25 @@ const submit = async function () {
     console.log('sumbit')
 }
 
+const formatedData = function (data: Form) {
+    return {
+        ...data,
+        passportData: {
+            passportnumber: data.passportData.passportnumber.replace(
+                /[^\d]/g,
+                ''
+            ),
+            passportcode: data.passportData.passportcode.replace(/[^\d]/g, ''),
+            passportseries: data.passportData.passportseries.replace(
+                /[^\d]/g,
+                ''
+            ),
+        },
+    }
+}
+
 const validateForm = function () {
-    validateFields = validate(form, formRules, customErrors)
+    validateFields = validate(formatedData(form), formRules, customErrors)
 
     filterErrors(validateFields.formErrors, errors)
 
@@ -232,7 +249,12 @@ const validateForm = function () {
 watch(
     () => form,
     (newVal) => {
-        validateFields = validate(newVal, formRules, customErrors, false)
+        validateFields = validate(
+            formatedData(newVal),
+            formRules,
+            customErrors,
+            false
+        )
         filterErrors(validateFields.formErrors, errors)
     },
     { deep: true }
@@ -361,6 +383,7 @@ watch(
                             ></address-field>
                         </fieldset>
                     </template>
+                    <template #btn-label>Продолжить</template>
                 </form-wrapper>
                 <template #fallback>
                     <skeleton-form class="contact-skeleton">

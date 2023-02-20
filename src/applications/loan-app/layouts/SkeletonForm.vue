@@ -21,6 +21,11 @@
     }
 }
 
+.edit .skeleton {
+    margin: 0;
+    max-width: 640px;
+}
+
 .contact-skeleton {
     .btn-wrapper {
         margin-top: 24px;

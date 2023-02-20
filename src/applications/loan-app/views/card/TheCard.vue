@@ -331,6 +331,7 @@ onMounted(() => {
                             >
                         </div>
                     </template>
+                    <template #btn-label>Продолжить</template>
                 </form-wrapper>
                 <template #fallback>
                     <skeleton-form class="card-skeleton">

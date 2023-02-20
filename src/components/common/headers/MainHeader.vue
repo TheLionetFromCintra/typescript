@@ -103,6 +103,12 @@ const { title, desc, showAuto } = defineProps<Props>()
             }
         }
     }
+
+    &.not-found {
+        .main-img {
+            bottom: 0;
+        }
+    }
     .container {
         padding: 50px 40px 36px 40px;
         margin: 0 auto;

@@ -20,8 +20,8 @@ const submit = function () {
         <slot name="default"></slot>
         <div class="btn d-flex justify-content-center">
             <base-button class="button" type="submit" mode="yellow"
-                >Продолжить</base-button
-            >
+                ><slot name="btn-label"></slot
+            ></base-button>
         </div>
     </form>
 </template>
@@ -58,6 +58,13 @@ const submit = function () {
     max-width: 100%;
     .btn {
         margin-top: 36px;
+    }
+}
+
+.edit {
+    .form {
+        margin: 0;
+        max-width: 640px;
     }
 }
 

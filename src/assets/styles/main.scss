@@ -420,6 +420,17 @@ body {
     animation: none;
 }
 
+.padding-bottom {
+    padding-bottom: 190px;
+
+    @media (max-width: $tablet) {
+        padding-bottom: 220px;
+    }
+    @media (max-width: $mobile) {
+        padding-bottom: 170px;
+    }
+}
+
 @keyframes cursorBlink {
     49% {
         opacity: 1;

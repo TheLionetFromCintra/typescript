@@ -5,7 +5,6 @@ export interface App {
     data: {
         contactData: ContactData
         passportData: PassportData
-        cardData: CardData
         isSigned: boolean
         isSubscribed: boolean
     }
