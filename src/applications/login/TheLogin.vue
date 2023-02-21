@@ -43,7 +43,7 @@ onMounted(() => {
             </div>
             <section>
                 <div class="banner"></div>
-                <h1 class="subtitle">Отказаться от подписки</h1>
+                <h1 class="subtitle">Авторизация</h1>
                 <router-view></router-view>
             </section>
         </div>

@@ -6,7 +6,7 @@ import TheField from '@/components/form/fields/TheField.vue'
 import AddressField from '@/components/form/fields/AddressField.vue'
 import RadioBtns from '@/components/form/gender/RadioBtns.vue'
 
-import { defineAsyncComponent, reactive, computed, watch } from 'vue'
+import { defineAsyncComponent, reactive, watch } from 'vue'
 
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
@@ -210,6 +210,7 @@ const formatedData = function (data: Form) {
         passportnumber: data.passportnumber.replace(/[^\d]/g, ''),
         passportcode: data.passportcode.replace(/[^\d]/g, ''),
         passportseries: data.passportseries.replace(/[^\d]/g, ''),
+        passsportdate: data.passportdate,
     }
 }
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-// import sendUnsubscribe from '@/api/sendUnsubscribe'
+// import auth from '@/api/auth'
+
 import FormWrapper from '@/applications/loan-app/layouts/FormWrapper.vue'
 import TheField from '@/components/form/fields/TheField.vue'
 
@@ -42,23 +43,17 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
-    // const info = await sendUnsubscribe(form)
+    // const response = await auth(form)
 
-    const info = {
-        status: 'phoneNotFound',
-    }
+    // if (typeof response.result_phone === 'boolean' && !response.result_phone) {
+    //     errors.phone = 'Данный номер не зарегистрирован'
 
-    let routeName =
-        info.status === 'phoneNotFound'
-            ? 'UnsubscribeInfo'
-            : 'UnsubscribeMessage'
-    routeName = info.status === 'sendSMS' ? 'UnsubscribeSms' : routeName
+    //     return
+    // }
 
     router.push({
-        // name: routeName,
-        name: 'UnsubscribeInfo',
+        name: 'LoginCode',
         query: {
-            status: info.status,
             phone: form.phone,
         },
     })
@@ -102,7 +97,7 @@ watch(
                 ></the-field>
             </fieldset>
         </template>
-        <template #btn-label>Продолжить</template>
+        <template #btn-label>Войти</template>
     </form-wrapper>
 </template>
 

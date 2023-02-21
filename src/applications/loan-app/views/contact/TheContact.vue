@@ -234,6 +234,7 @@ const formatedData = function (data: Form) {
                 /[^\d]/g,
                 ''
             ),
+            passportdate: data.passportData.passportdate,
         },
     }
 }
@@ -242,6 +243,7 @@ const validateForm = function () {
     validateFields = validate(formatedData(form), formRules, customErrors)
 
     filterErrors(validateFields.formErrors, errors)
+    console.log(errors)
 
     validateFields.isValid && submit()
 }

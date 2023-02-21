@@ -38,7 +38,7 @@ const logout = function () {
                 class="btn d-flex justify-content-center"
                 v-if="!Cookies.get('sbg-in')"
             >
-                <base-button :link="true" mode="yellow" to="/login"
+                <base-button :link="true" :href="true" mode="yellow" to="/login"
                     >Войти</base-button
                 >
             </div>

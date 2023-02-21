@@ -458,3 +458,16 @@ body {
 header {
     z-index: 1001;
 }
+
+.banner {
+    ins + ins {
+        margin-top: 12px !important;
+    }
+}
+@media (max-width: 374px) {
+    .banner {
+        .ad-inner-container {
+            min-width: 272px !important;
+        }
+    }
+}

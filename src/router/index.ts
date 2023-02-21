@@ -111,11 +111,88 @@ const router = createRouter({
                 },
                 {
                     path: '/unsubscribe/success',
-                    name: 'UnsubSuccess',
+                    name: 'UnsubscribeMessage',
                     component: () =>
                         import(
                             '@/applications/unsubscribe/views/UnsubSuccess.vue'
                         ),
+                    beforeEnter: (to) => {
+                        const { status, phone, message } = to.query
+
+                        if (status || phone || message) {
+                            return
+                        } else {
+                            return { name: 'Unsubscribe' }
+                        }
+                    },
+                },
+                {
+                    path: '/unsubscribe/info',
+                    name: 'UnsubscribeInfo',
+                    component: () =>
+                        import(
+                            '@/applications/unsubscribe/views/UnsubInfo.vue'
+                        ),
+                    beforeEnter: (to) => {
+                        const { status, phone } = to.query
+
+                        if (status && phone) {
+                            return
+                        } else {
+                            return { name: 'Unsubscribe' }
+                        }
+                    },
+                },
+            ],
+        },
+        {
+            path: '/ticket',
+            redirect: '/ticket/:uid',
+            component: () =>
+                import('@/applications/unsubscribe/TheUnsubscribe.vue'),
+            children: [
+                {
+                    path: '/ticket/:uid',
+                    name: 'TicketInfo',
+                    component: () =>
+                        import(
+                            '@/applications/unsubscribe/views/TicketInfo.vue'
+                        ),
+                },
+            ],
+        },
+        {
+            path: '/login',
+            redirect: '/login',
+            component: () => import('@/applications/login/TheLogin.vue'),
+            beforeEnter: () => {
+                if (Cookies.get('sbg-in')) {
+                    return { name: 'PersonalAccount' }
+                } else {
+                    return
+                }
+            },
+            children: [
+                {
+                    path: '/login',
+                    name: 'Login',
+                    component: () =>
+                        import('@/applications/login/views/LoginMain.vue'),
+                },
+                {
+                    path: '/login/code',
+                    name: 'LoginCode',
+                    component: () =>
+                        import('@/applications/login/views/LoginCode.vue'),
+                    beforeEnter: (to) => {
+                        const { phone } = to.query
+
+                        if (phone) {
+                            return
+                        } else {
+                            return { name: 'Login' }
+                        }
+                    },
                 },
             ],
         },

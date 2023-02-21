@@ -68,6 +68,29 @@ const submit = function () {
     }
 }
 
+.unsub-form {
+    margin: 0;
+    max-width: 300px;
+
+    .btn {
+        margin-top: 40px;
+        justify-content: flex-start;
+        button {
+            max-width: 179px;
+        }
+    }
+}
+
+.info-form {
+    margin: 0;
+    max-width: 540px;
+
+    .btn {
+        margin-top: 24px;
+        justify-content: flex-start;
+    }
+}
+
 @media (max-width: $mobile) {
     .btn,
     .contact-form .btn {
@@ -77,6 +100,25 @@ const submit = function () {
     .contact-form {
         .btn {
             justify-content: center;
+        }
+    }
+
+    .edit {
+        .form {
+            margin: 0 auto;
+        }
+    }
+
+    .unsub-form,
+    .info-form {
+        margin: 0 auto;
+        max-width: 576px;
+
+        .btn {
+            justify-content: center;
+            button {
+                max-width: 231px;
+            }
         }
     }
 }

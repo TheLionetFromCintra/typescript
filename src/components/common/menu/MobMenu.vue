@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import TheMenu from '@/components/common/menu/TheMenu.vue'
-import { onUnmounted, ref } from 'vue'
+import { onUnmounted } from 'vue'
 
 interface Props {
     isActive: boolean

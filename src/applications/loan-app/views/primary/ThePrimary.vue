@@ -11,7 +11,7 @@ import TheField from '@/components/form/fields/TheField.vue'
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
 
-import stat from '@/api/stat'
+// import stat from '@/api/stat'
 import Storage from '@/ext/storage/storage'
 
 import {
@@ -78,8 +78,8 @@ const form = reactive<Form>({
 })
 
 let errors = reactive<Form>({
-    email: '',
     phone: '',
+    email: '',
 })
 
 let validateFields = reactive({
@@ -92,6 +92,8 @@ const formRules = reactive({
     email: [Validation.EMAIL],
 })
 
+const customErrors = reactive({})
+
 const emailFocused = ref(false)
 const phoneFocused = ref(false)
 
@@ -99,13 +101,13 @@ const emailFocus = function () {
     if (emailFocused.value) return
 
     emailFocused.value = true
-    stat('email')
+    // stat('email')
 }
 const phoneFocus = function () {
     if (phoneFocused.value) return
 
     phoneFocused.value = true
-    stat('phone')
+    // stat('phone')
 }
 
 const { phone, email } = appStore.data.contactData
@@ -121,20 +123,20 @@ form.email = email ?? ''
 const submit = async function () {
     console.log('submit')
 
-    const { checkPhoneByCode, noValid } = await appStore.send('info', {
-        contactData: form,
-    })
+    // const { checkPhoneByCode, noValid } = await appStore.send('info', {
+    //     contactData: form,
+    // })
 
-    if (noValid && Object.keys(noValid)) {
-        const formErrors = errors
+    // if (noValid && Object.keys(noValid)) {
+    //     const formErrors = errors
 
-        formErrors.phone =
-            (noValid.phone === false && 'Невалидное значение') || ''
-        formErrors.email =
-            (noValid.email === false && 'Невалидное значение') || ''
+    //     formErrors.phone =
+    //         (noValid.phone === false && 'Невалидное значение') || ''
+    //     formErrors.email =
+    //         (noValid.email === false && 'Невалидное значение') || ''
 
-        return
-    }
+    //     return
+    // }
 
     // if (!checkPhoneByCode) {
     //     router.push({ name: 'LoanContact' })
@@ -147,7 +149,7 @@ const submit = async function () {
 const validateForm = function () {
     isSubmit.value = true
 
-    validateFields = validate(form, formRules)
+    validateFields = validate(form, formRules, customErrors)
 
     filterErrors(validateFields.formErrors, errors)
     ;((autoPaymentText.value && autoPayment.value) || !autoPaymentText.value) &&
@@ -159,7 +161,7 @@ const validateForm = function () {
 watch(
     () => form,
     (newVal) => {
-        validateFields = validate(newVal, formRules, false)
+        validateFields = validate(newVal, formRules, customErrors, false)
         filterErrors(validateFields.formErrors, errors)
     },
     { deep: true }

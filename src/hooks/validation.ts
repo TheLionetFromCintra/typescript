@@ -22,10 +22,6 @@ export default function useValidation() {
 
     setFormErrors.call(this, form, formErrors)
 
-    const validationData = function (data: object) {
-        return data
-    }
-
     const validate = function (
         form: any,
         formRules: any,
@@ -46,6 +42,10 @@ export default function useValidation() {
             isValid: validation.isValid,
             formErrors: validation.errors,
         }
+    }
+
+    const validationData = function (data: object) {
+        return data
     }
 
     const filterErrors = function (obj: object, errors: object) {
