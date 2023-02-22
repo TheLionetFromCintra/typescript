@@ -265,7 +265,12 @@ watch(
 </script>
 
 <template>
-    <step-wrapper :step-current="2" :step-max="3" step-title="Заполните анкету">
+    <step-wrapper
+        :step-current="2"
+        :step-max="3"
+        step-title="Заполните анкету"
+        :show-cacl="true"
+    >
         <template #form>
             <suspense>
                 <form-wrapper @submit="validateForm" class="contact-form">

@@ -16,9 +16,11 @@ interface Props {
     stepMax: number
     stepTitle: string
     mobTitle?: string
+    showCacl?: boolean
 }
 
-const { stepCurrent, stepMax, stepTitle, mobTitle } = defineProps<Props>()
+const { stepCurrent, stepMax, stepTitle, mobTitle, showCacl } =
+    defineProps<Props>()
 
 const progressBar = computed(() => {
     return Number(10 + stepCurrent * 30)
@@ -39,7 +41,7 @@ const progressBar = computed(() => {
                 }}
             </h1>
 
-            <step-calc v-if="isCpa"></step-calc>
+            <step-calc v-if="isCpa && showCacl"></step-calc>
 
             <div class="poll__title">
                 {{ stepCurrent }} из {{ stepMax }} <span>{{ stepTitle }}</span>

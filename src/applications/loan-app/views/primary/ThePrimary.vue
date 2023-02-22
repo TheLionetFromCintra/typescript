@@ -191,6 +191,7 @@ if (isAnticharge.value) {
         :step-max="3"
         step-title="Заполните форму"
         mob-title="Контактные данные"
+        :show-cacl="true"
     >
         <template #form>
             <suspense>

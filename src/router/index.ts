@@ -45,10 +45,34 @@ const router = createRouter({
                 import('@/applications/loan-app/views/card/TheCard.vue'),
         },
         {
-            path: '/auth',
-            name: 'LoanAuth',
+            path: '/before',
+            name: 'LoanBefore',
             component: () =>
-                import('@/applications/loan-app/views/auth/LoanAuth.vue'),
+                import('@/applications/loan-app/views/before/LoanBefore.vue'),
+        },
+        {
+            path: '/auth',
+            redirect: '/auth',
+            component: () => import('@/applications/login/TheLogin.vue'),
+            children: [
+                {
+                    path: '/auth',
+                    name: 'LoanAuth',
+                    component: () =>
+                        import(
+                            '@/applications/loan-app/views/auth/LoanAuth.vue'
+                        ),
+                    beforeEnter: (to) => {
+                        const { phone } = to.query
+
+                        if (phone) {
+                            return
+                        } else {
+                            return { name: 'LoanPrimary' }
+                        }
+                    },
+                },
+            ],
         },
         {
             path: '/lk',
@@ -70,6 +94,15 @@ const router = createRouter({
                     path: 'save-changes',
                     component: () =>
                         import('@/applications/lk/views/SaveChanges.vue'),
+                    beforeEnter: (to) => {
+                        const { phone } = to.query
+
+                        if (phone) {
+                            return
+                        } else {
+                            return { name: 'PersonalAccount' }
+                        }
+                    },
                 },
                 {
                     path: 'documents',
@@ -134,9 +167,24 @@ const router = createRouter({
                             '@/applications/unsubscribe/views/UnsubInfo.vue'
                         ),
                     beforeEnter: (to) => {
-                        const { status, phone } = to.query
+                        const { status, phone, message } = to.query
 
-                        if (status && phone) {
+                        if (status || phone || message) {
+                            return
+                        } else {
+                            return { name: 'Unsubscribe' }
+                        }
+                    },
+                },
+                {
+                    path: '/unsubscribe/code',
+                    name: 'UnsubscribeSms',
+                    component: () =>
+                        import('@/applications/unsubscribe/views/UnsubSms.vue'),
+                    beforeEnter: (to) => {
+                        const { phone } = to.query
+
+                        if (phone) {
                             return
                         } else {
                             return { name: 'Unsubscribe' }
@@ -249,6 +297,29 @@ router.beforeEach(async (to) => {
             // await Store.dispatch('application/update')
             return
         }
+    }
+
+    if (to.name === 'LoanBefore') {
+        // const {
+        //     passportData: { passportnumber },
+        // } = Store.getters['application/user']
+        // if (passportnumber) {
+        //     if (from.name !== null) {
+        //         await Store.dispatch('application/update')
+        //     }
+        //     const { isSigned } = Store.getters['application/user']
+        //     if (isSigned) {
+        //         Store.commit('application/load', false)
+        //         next({
+        //             name: 'LoanCard',
+        //         })
+        //     } else {
+        //         next()
+        //     }
+        // } else {
+        //     Store.commit('application/load', false)
+        //     next({ name: 'LoanPassport' })
+        // }
     }
 })
 

@@ -6,7 +6,7 @@ import TheCode from '@/components/common/code/TheCode.vue'
 import { vAutofocus } from '@/directives/vAutofocus'
 
 import { useRoute, useRouter } from 'vue-router'
-import { computed, reactive, watch } from 'vue'
+import { ref, computed, reactive, watch } from 'vue'
 
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
@@ -29,6 +29,8 @@ const form = reactive<Form>({
     code: '',
 })
 
+const isFio = ref(false)
+
 let errors = reactive<Form>({
     code: '',
 })
@@ -48,33 +50,48 @@ const customErrors = reactive({})
 //VALIDATION AND SUBMITTING FORM
 const getCode = async function () {
     console.log('done')
-    // await this.$store.dispatch('application/send', {
-    //             contactData: this.user.contactData
-    //         })
+    // await sendUnsubscribe(route.query.phone)
 }
 
 const submit = async function () {
     console.log('done 123')
 
-    // const { wrongCode } = await this.$store.dispatch('application/send', {
-    //     contactData: {
-    //         ...this.user.contactData,
-    //         code_hash: this.code_hash,
-    //         code: this.code,
-    //         phone: this.user.contactData.phone || Storage.get('user_phone'),
-    //     },
+    isFio.value = false
+
+    // const response = await sendUnsubscribe({
+    //     data: route.query.phone,
+    //     code: form.code,
+    //     code_hash: this.code_hash,
     // })
 
-    // if (!wrongCode) {
-    //     await this.$store.dispatch('application/update')
-    //     this.$store.commit('application/clearCode')
-    //     this.$refs.code.resetTimer()
-    //     router.push({ name: 'LoanContact' })
-    //     Storage.delete('user_phone')
-    // } else {
+    // isFio.value = response.getFio
+
+    // if (response.status === 'wrongCode') {
     //     errors.code = 'Неверный код'
     //     return
     // }
+
+    // this.$store.commit('application/clearCode')
+    // this.$refs.code.resetTimer()
+
+    // if (response.success) {
+    //     router.push({
+    //         name: 'UnsubscribeMessage',
+    //         query: {
+    //             status: 'subscribeCanceled',
+    //             message: 'Вы успешно отписаны!',
+    //         },
+    //     })
+    // }
+}
+
+const sendForm = function () {
+    router.push({
+        name: 'UnsubscribeInfo',
+        query: {
+            message: 'Вы ввели неправильный код из СМС',
+        },
+    })
 }
 
 const validateForm = function () {
@@ -100,8 +117,7 @@ watch(
 <template>
     <div class="desc">
         <p>
-            Номер телефона уже используется. Для продолжения введите код из СМС
-            или используйте другой номер телефона для регистрации.
+            Мы отправили код подтверждения на номер <strong>{{ phone }}</strong>
         </p>
     </div>
     <form-wrapper @submit="validateForm" class="unsub-form">
@@ -127,6 +143,9 @@ watch(
                 </div>
             </fieldset>
         </template>
+        <div class="send" v-if="isFio">
+            <div class="text" @click="sendForm">Заполнить форму?</div>
+        </div>
         <template #btn-label>Подтвердить</template>
     </form-wrapper>
 </template>

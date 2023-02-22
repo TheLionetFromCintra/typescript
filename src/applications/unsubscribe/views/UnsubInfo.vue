@@ -19,6 +19,10 @@ const phone = computed(() => {
     return route.query.phone
 })
 
+const message = computed(() => {
+    return route.query.message
+})
+
 //FORM DATA
 interface Form {
     firstname: string
@@ -130,12 +134,15 @@ watch(
     <div class="info">
         <form-wrapper @submit="validateForm" class="info-form">
             <template #inputs>
-                <p class="desc">
-                    К сожалению мы не нашли указанный Вами номер
-                    <strong>{{ phone }}</strong
-                    ><br />
-                    Пожайлуста, заполните форму ниже:
-                </p>
+                <div class="desc">
+                    <p v-if="!message">
+                        К сожалению мы не нашли указанный Вами номер
+                        <strong>{{ phone }}</strong>
+                    </p>
+                    <p v-else>{{ message }}</p>
+
+                    <p>Пожайлуста, заполните форму ниже:</p>
+                </div>
                 <fieldset class="small d-flex">
                     <the-field
                         v-model="form.lastname"

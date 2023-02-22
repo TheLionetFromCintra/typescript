@@ -239,6 +239,7 @@ onMounted(() => {
         :step-current="3"
         :step-max="3"
         step-title="Введите данные вашей карты"
+        :show-cacl="true"
     >
         <template #form>
             <suspense>
