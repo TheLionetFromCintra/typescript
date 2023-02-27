@@ -12,7 +12,7 @@ const { mode, link, href, to = '/', type = 'button' } = defineProps<Props>()
 
 <template>
     <button v-if="!link" :class="mode" :type="type">
-        <slot></slot>
+        <span><slot></slot></span>
     </button>
     <a :href="to" v-else-if="link && href" :class="mode">
         <slot></slot>
@@ -38,9 +38,15 @@ button {
     letter-spacing: 0.07em;
     outline: none;
 
+    span {
+        display: block;
+        font-weight: inherit;
+    }
+
     transition: color 0.3s linear, background-color 0.3s linear,
         border-color 0.3s linear, box-shadow 0.2s linear;
 }
+
 a.black,
 button.black {
     color: $primary-black;
@@ -97,5 +103,46 @@ button.disabled {
     border: 1px solid #8f8f8f;
     background-color: transparent;
     color: #8f8f8f;
+}
+
+.loader {
+    span {
+        opacity: 0;
+        visibility: hidden;
+    }
+    button {
+        &::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            border: 4px solid transparent;
+            border-top-color: $primary-grey-dark;
+            border-radius: 50%;
+            animation: button-loading-spinner 1s ease infinite;
+        }
+        &:focus,
+        &:active,
+        &:focus-within {
+            &::after {
+                border-top-color: #fefefe;
+            }
+        }
+    }
+}
+
+@keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+
+    to {
+        transform: rotate(1turn);
+    }
 }
 </style>

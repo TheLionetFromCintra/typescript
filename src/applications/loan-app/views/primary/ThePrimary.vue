@@ -11,8 +11,10 @@ import TheField from '@/components/form/fields/TheField.vue'
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
 
-// import stat from '@/api/stat'
+import stat from '@/api/stat'
 import Storage from '@/ext/storage/storage'
+
+import { storeToRefs } from 'pinia'
 
 import {
     computed,
@@ -101,49 +103,48 @@ const emailFocus = function () {
     if (emailFocused.value) return
 
     emailFocused.value = true
-    // stat('email')
+    stat('email')
 }
 const phoneFocus = function () {
     if (phoneFocused.value) return
 
     phoneFocused.value = true
-    // stat('phone')
+    stat('phone')
 }
 
-const { phone, email } = appStore.data.contactData
+const { data } = storeToRefs(appStore)
 
-form.phone = phone ?? ''
-form.email = email ?? ''
+console.log(reactive(appStore.data.contactData))
 
-// if (this.form.phone || this.user.contactData.id) return
+// console.log(appStore.data)
+// console.log(appStore.data.contactData.phone)
+
+// form.phone = appStore.data.contactData.phone ?? ''
+// form.email = appStore.data.contactData.email ?? ''
 
 //--FORM INPUTS
 
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
-    console.log('submit')
+    appStore.load(true)
+    const { checkPhoneByCode, noValid } = await appStore.send('info', {
+        contactData: form,
+    })
+    appStore.load(false)
 
-    // const { checkPhoneByCode, noValid } = await appStore.send('info', {
-    //     contactData: form,
-    // })
+    if (noValid && Object.keys(noValid)) {
+        errors.phone = (noValid.phone === false && 'Невалидное значение') || ''
+        errors.email = (noValid.email === false && 'Невалидное значение') || ''
 
-    // if (noValid && Object.keys(noValid)) {
-    //     const formErrors = errors
+        return
+    }
 
-    //     formErrors.phone =
-    //         (noValid.phone === false && 'Невалидное значение') || ''
-    //     formErrors.email =
-    //         (noValid.email === false && 'Невалидное значение') || ''
-
-    //     return
-    // }
-
-    // if (!checkPhoneByCode) {
-    //     router.push({ name: 'LoanContact' })
-    // } else {
-    //     Storage.set('user_phone', form.phone)
-    //     router.push({ name: 'LoanAuth' })
-    // }
+    if (!checkPhoneByCode) {
+        router.push({ name: 'LoanContact' })
+    } else {
+        Storage.set('user_phone', form.phone)
+        router.push({ name: 'LoanAuth' })
+    }
 }
 
 const validateForm = function () {
@@ -195,8 +196,12 @@ if (isAnticharge.value) {
     >
         <template #form>
             <suspense>
-                <form-wrapper @submit="validateForm">
+                <form-wrapper
+                    @submit="validateForm"
+                    :class="{ loader: appStore.isLoad }"
+                >
                     <template #inputs>
+                        {{ appStore.data.contactData.phone }}
                         <fieldset class="inputs d-flex">
                             <the-field
                                 v-model.trim="form.phone"
@@ -236,7 +241,7 @@ if (isAnticharge.value) {
                             ></the-checkbox>
                         </div>
                     </template>
-                    <template #btn-label>Продолжить</template>
+                    <template #btn-label> Продолжить </template>
                 </form-wrapper>
                 <template #fallback>
                     <skeleton-form>

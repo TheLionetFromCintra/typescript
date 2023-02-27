@@ -38,6 +38,7 @@ const submit = function () {
 .btn {
     width: 100%;
     margin-top: 60px;
+    position: relative;
 
     button {
         padding: 12px;

@@ -25,6 +25,7 @@ async function update(): Promise<any> {
     }
 
     Cookies.set('sbg-tz', Intl.DateTimeFormat().resolvedOptions().timeZone)
+
     const application = await getUser()
 
     return application
@@ -32,6 +33,7 @@ async function update(): Promise<any> {
 
 export const useAppStore = defineStore('AppStore', {
     state: (): App => ({
+        isLoad: false,
         csrf: '',
         code_value: '',
         createdAt: '',
@@ -44,7 +46,7 @@ export const useAppStore = defineStore('AppStore', {
                 gender: '0',
                 lastname: '',
                 patronymic: '',
-                phone: '111',
+                phone: '',
             },
             passportData: {
                 passportcode: '',
@@ -93,37 +95,37 @@ export const useAppStore = defineStore('AppStore', {
             amount && Cookies.set('amount', String(amount))
             term && Cookies.set('term', JSON.stringify(term))
         },
-
+        load(flag: boolean) {
+            this.isLoad = flag
+        },
         async updateData(data) {
-            // let application = await update()
             let application = data ? data : await update()
-
-            // if(data)
-            // const application: Questionnaire = await update()
 
             if (application.code_value)
                 Storage.set('code_value', application.code_value)
 
-            if (application.questionnaire.contactData?.code_hash)
+            if (application.questionnaire?.contactData?.code_hash)
                 delete application.questionnaire.contactData.code_hash
-            if (application.questionnaire.contactData?.code)
+            if (application.questionnaire?.contactData?.code)
                 delete application.questionnaire.contactData.code
 
-            this.createdAt = application.questionnaire.createdAt
+            this.createdAt = application.questionnaire?.createdAt
+
             this.csrf = application.csrf || this.csrf
             this.code_value = Storage.get('code_value') || this.code_value
 
             this.data.contactData = {
                 ...this.data.contactData,
-                ...application.questionnaire.contactData,
+                ...application.questionnaire?.contactData,
             }
             this.data.passportData = {
                 ...this.data.passportData,
-                ...application.questionnaire.passportData,
+                ...application.questionnaire?.passportData,
             }
 
-            this.data.isSigned = application.questionnaire.isSigned
-            this.data.isSubscribed = application.questionnaire.isSubscribed
+            this.data.isSigned =
+                application.questionnaire?.isSigned || this.data.isSigned
+            this.data.isSubscribed = application.questionnaire?.isSubscribed
         },
         async send(type = 'info', aData) {
             const contactData = {
@@ -148,13 +150,13 @@ export const useAppStore = defineStore('AppStore', {
                 ? sendPassport(data)
                 : send(data))
 
-            // this.updateData({
-            //     ...application,
-            //     questionnaire: {
-            //         contactData,
-            //         passportData,
-            //     },
-            // })
+            this.updateData({
+                ...application,
+                questionnaire: {
+                    contactData,
+                    passportData,
+                },
+            })
 
             return application
         },

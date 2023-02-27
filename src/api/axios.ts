@@ -17,11 +17,11 @@ function apiCaller(path: string, options: Options, index = 0) {
     const { data = {}, params = {}, method = 'get' } = options
 
     if (method === 'post') {
-        // api.interceptors.request.use((config) => {
-        //     const appStore = useAppStore()
-        //     data.csrf = appStore.csrf
-        //     return config
-        // })
+        api.interceptors.request.use((config) => {
+            const appStore = useAppStore()
+            data.csrf = appStore.csrf
+            return config
+        })
     }
 
     return new Promise((resolve, reject) => {
@@ -33,13 +33,13 @@ function apiCaller(path: string, options: Options, index = 0) {
         })
             .then(async ({ data }) => {
                 const { csrf, code_value } = data
-                console.log(data)
 
-                // api.interceptors.request.use((config) => {
-                //     const appStore = useAppStore()
-                //     appStore.updateData(data)
-                //     return config
-                // })
+                api.interceptors.request.use((config) => {
+                    const appStore = useAppStore()
+                    appStore.updateData({ ...data, csrf, code_value })
+                    return config
+                })
+
                 resolve(data)
             })
             .catch(async (e) => {

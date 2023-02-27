@@ -1,4 +1,5 @@
 export interface App {
+    isLoad: boolean
     csrf: string
     code_value: string
     createdAt: string
