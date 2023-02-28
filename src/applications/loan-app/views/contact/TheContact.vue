@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineAsyncComponent, reactive, computed, watch } from 'vue'
+import { defineAsyncComponent, reactive, computed, watch, onMounted } from 'vue'
 import type { WritableComputedRef } from 'vue'
 
 import { vAutofocus } from '@/directives/vAutofocus'
@@ -18,6 +18,10 @@ import useMobile from '@/hooks/mobile'
 import type { PassportData, ContactData } from '@/types/app/app'
 import { useAppStore } from '@/stores/app/AppStore'
 import setMask from '@/helpers/string/setMask'
+
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const appStore = useAppStore()
 
@@ -60,10 +64,10 @@ const form = reactive<Form>({
         patronymic: '',
     },
     passportData: {
-        passportcode: '',
+        passportissuecode: '',
         passportnumber: '',
         passportseries: '',
-        passportdate: '',
+        passportissuedate: '',
     },
 })
 form.contactData.firstname = appStore.data.contactData.firstname
@@ -73,8 +77,8 @@ form.contactData.birthday = appStore.data.contactData.birthday
 form.contactData.gender = String(appStore.data.contactData.gender) || '0'
 
 form.contactData.addrcity = appStore.data.contactData.addrcity
-form.passportData.passportcode = setMask(
-    appStore.data.passportData.passportcode,
+form.passportData.passportissuecode = setMask(
+    appStore.data.passportData.passportissuecode,
     '###-###'
 )
 form.passportData.passportnumber = setMask(
@@ -85,7 +89,8 @@ form.passportData.passportseries = setMask(
     appStore.data.passportData.passportseries,
     '## ##'
 )
-form.passportData.passportdate = appStore.data.passportData.passportdate
+form.passportData.passportissuedate =
+    appStore.data.passportData.passportissuedate
 
 const fullname: WritableComputedRef<string> = computed({
     get(): string {
@@ -118,10 +123,10 @@ let errors = reactive<Form>({
         patronymic: '',
     },
     passportData: {
-        passportcode: '',
+        passportissuecode: '',
         passportnumber: '',
         passportseries: '',
-        passportdate: '',
+        passportissuedate: '',
     },
 })
 
@@ -176,7 +181,7 @@ const formRules = reactive({
         patronymic: NAME_RULES,
     },
     passportData: {
-        passportcode: [
+        passportissuecode: [
             Validation.REQUIRED,
             [Validation.MIN, 6],
             [Validation.MAX, 6],
@@ -191,7 +196,7 @@ const formRules = reactive({
             [Validation.MIN, 4],
             [Validation.MAX, 4],
         ],
-        passportdate: ISSUE_DATE_VALIDATE,
+        passportissuedate: ISSUE_DATE_VALIDATE,
     },
 })
 const customErrors = reactive({
@@ -209,7 +214,7 @@ const customErrors = reactive({
         },
     },
     passportData: {
-        passportdate: {
+        passportissuedate: {
             [Validation.DATE_LESS]: 'Дата не может быть больше текущей',
         },
     },
@@ -218,7 +223,48 @@ const customErrors = reactive({
 
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
-    console.log('sumbit')
+    appStore.load(true)
+    const { next_step, noValid } = await appStore.send('info', {
+        contactData: {
+            ...formatedData(form).contactData,
+        },
+        passportData: {
+            ...formatedData(form).passportData,
+            passportissuecode: setMask(
+                form.passportData.passportissuecode,
+                '###-###'
+            ),
+        },
+    })
+    appStore.load(false)
+
+    if (noValid && Object.keys(noValid)) {
+        errors.contactData.firstname =
+            (noValid.firstname === false && 'Невалидное значение') || ''
+        errors.contactData.lastname =
+            (noValid.lastname === false && 'Невалидное значение') || ''
+        errors.contactData.patronymic =
+            (noValid.patronymic === false && 'Невалидное значение') || ''
+        errors.contactData.birthday =
+            (noValid.birthday === false && 'Невалидное значение') || ''
+        errors.contactData.gender =
+            (noValid.gender === false && 'Невалидное значение') || ''
+
+        errors.passportData.passportissuecode =
+            (noValid.passportissuecode === false && 'Невалидное значение') || ''
+        errors.passportData.passportnumber =
+            (noValid.passportnumber === false && 'Невалидное значение') || ''
+        errors.passportData.passportseries =
+            (noValid.passportseries === false && 'Невалидное значение') || ''
+        errors.passportData.passportissuedate =
+            (noValid.passportissuedate === false && 'Невалидное значение') || ''
+
+        return
+    }
+
+    router.push({
+        name: next_step === 'before' ? 'LoanBefore' : 'LoanContact',
+    })
 }
 
 const formatedData = function (data: Form) {
@@ -229,12 +275,15 @@ const formatedData = function (data: Form) {
                 /[^\d]/g,
                 ''
             ),
-            passportcode: data.passportData.passportcode.replace(/[^\d]/g, ''),
+            passportissuecode: data.passportData.passportissuecode.replace(
+                /[^\d]/g,
+                ''
+            ),
             passportseries: data.passportData.passportseries.replace(
                 /[^\d]/g,
                 ''
             ),
-            passportdate: data.passportData.passportdate,
+            passportissuedate: data.passportData.passportissuedate,
         },
     }
 }
@@ -243,7 +292,6 @@ const validateForm = function () {
     validateFields = validate(formatedData(form), formRules, customErrors)
 
     filterErrors(validateFields.formErrors, errors)
-    console.log(errors)
 
     validateFields.isValid && submit()
 }
@@ -273,7 +321,11 @@ watch(
     >
         <template #form>
             <suspense>
-                <form-wrapper @submit="validateForm" class="contact-form">
+                <form-wrapper
+                    @submit="validateForm"
+                    class="contact-form"
+                    :class="{ loader: appStore.isLoad }"
+                >
                     <template #inputs>
                         <h4>Персональные данные</h4>
                         <fieldset>
@@ -351,7 +403,7 @@ watch(
                             <fieldset class="d-flex small">
                                 <the-field
                                     v-model.trim="
-                                        form.passportData.passportcode
+                                        form.passportData.passportissuecode
                                     "
                                     type="text"
                                     placeholder="123-456"
@@ -363,11 +415,13 @@ watch(
                                     max-length="7"
                                     name="passportCode"
                                     auto-tab="passportDate"
-                                    :error="errors.passportData.passportcode"
+                                    :error="
+                                        errors.passportData.passportissuecode
+                                    "
                                 ></the-field>
                                 <the-field
                                     v-model.trim="
-                                        form.passportData.passportdate
+                                        form.passportData.passportissuedate
                                     "
                                     type="text"
                                     placeholder="дд.мм.гггг"
@@ -378,7 +432,9 @@ watch(
                                     max-length="10"
                                     :date-type="true"
                                     name="passportDate"
-                                    :error="errors.passportData.passportdate"
+                                    :error="
+                                        errors.passportData.passportissuedate
+                                    "
                                 ></the-field>
                             </fieldset>
                         </div>

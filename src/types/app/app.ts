@@ -32,10 +32,10 @@ export interface ContactData {
 }
 
 export interface PassportData {
-    passportcode: string
+    passportissuecode: string
     passportnumber: string
     passportseries: string
-    passportdate: string
+    passportissuedate: string
     id?: number
 }
 

@@ -14,7 +14,7 @@ import useValidation from '@/hooks/validation'
 import stat from '@/api/stat'
 import Storage from '@/ext/storage/storage'
 
-import { storeToRefs } from 'pinia'
+// import { storeToRefs } from 'pinia'
 
 import {
     computed,
@@ -112,15 +112,14 @@ const phoneFocus = function () {
     stat('phone')
 }
 
-const { data } = storeToRefs(appStore)
-
-console.log(reactive(appStore.data.contactData))
-
-// console.log(appStore.data)
+// const { contactData } = appStore.user
+// const test = await appStore.getUser()
+// console.log(test)
+// console.log(contactData)
 // console.log(appStore.data.contactData.phone)
 
-// form.phone = appStore.data.contactData.phone ?? ''
-// form.email = appStore.data.contactData.email ?? ''
+form.phone = appStore.data.contactData.phone ?? ''
+form.email = appStore.data.contactData.email ?? ''
 
 //--FORM INPUTS
 
@@ -170,8 +169,16 @@ watch(
 //--VALIDATION AND SUBMITTING FORM
 
 //HOOKS
-onMounted(() => {
+onMounted(async () => {
     if (isCpa.value) agreement.value = true
+
+    // const { questionnaire } = await appStore.getUser()
+    // console.log(questionnaire)
+
+    // if (questionnaire.contactData) {
+    //     form.phone = questionnaire.contactData.phone ?? ''
+    //     form.email = questionnaire.contactData.email ?? ''
+    // }
 })
 //--HOOKS
 
@@ -201,10 +208,9 @@ if (isAnticharge.value) {
                     :class="{ loader: appStore.isLoad }"
                 >
                     <template #inputs>
-                        {{ appStore.data.contactData.phone }}
                         <fieldset class="inputs d-flex">
                             <the-field
-                                v-model.trim="form.phone"
+                                v-model="form.phone"
                                 type="tel"
                                 placeholder="+7 911 111 11 11"
                                 label="Номер телефона"
@@ -215,6 +221,7 @@ if (isAnticharge.value) {
                                 :error="errors.phone"
                                 :disabled="!!appStore.data.contactData.id"
                             ></the-field>
+
                             <the-field
                                 v-model.trim="form.email"
                                 type="email"

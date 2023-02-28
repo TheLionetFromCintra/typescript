@@ -204,9 +204,9 @@ const setPhoneMask = function (v: string) {
 
 const inputEvent = function (e: Event) {
     let v = (e.target as HTMLInputElement).value
-
     //forbid letters
-    if (props.pattern) v = v.replace(/[A-Za-zА-Яа-яЁё]/g, '')
+
+    if (props.pattern) field.value = v.replace(/[A-Za-zА-Яа-яЁё]/g, '')
 
     //show icon if phone or email
     if (
@@ -218,7 +218,6 @@ const inputEvent = function (e: Event) {
         showIcon.value = false
     }
     //--show icon if phone or email
-
     //phone mask
     if (props.type === 'tel') {
         const newVal = setPhoneMask(v)
@@ -226,10 +225,8 @@ const inputEvent = function (e: Event) {
     } else {
         field.value = v
     }
-
     //mask in general
     let caretPos = 0
-
     if (props.mask) {
         const beforeMask = v
         field.value = setMask(v, props.mask)
@@ -237,12 +234,10 @@ const inputEvent = function (e: Event) {
     } else {
         caretPos = v.length
     }
-
     //if date type
     if (props.dateType) {
         field.value = setDate(field.value)
     }
-
     //if card type
     if (props.cardType) {
         const [month] = field.value.split('/')
@@ -250,7 +245,6 @@ const inputEvent = function (e: Event) {
             field.value = '12'
         }
     }
-
     //autofocus next field
     if (
         props.autoTab &&
@@ -264,7 +258,6 @@ const inputEvent = function (e: Event) {
         nextField && nextField.focus()
         isTabbed.value = true
     }
-
     if (props.mask && props.valueWithoutMask)
         v = String(v).replace(/[^\d]/g, '')
 
@@ -307,7 +300,7 @@ const blurEvent = function () {
                     @input="inputEvent"
                     @focus="focusEvent"
                     @blur="blurEvent"
-                    v-model="field"
+                    :value="field"
                 />
                 <div
                     class="icon img-wrapper d-flex align-items-center justify-content-center"

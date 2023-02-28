@@ -134,8 +134,9 @@ const appStore = useAppStore()
                         <span class="label">Код подраздел.</span>
                         <div class="value">
                             {{
-                                appStore.data.passportData.passportcode
-                                    ? appStore.data.passportData.passportcode
+                                appStore.data.passportData.passportissuecode
+                                    ? appStore.data.passportData
+                                          .passportissuecode
                                     : '-'
                             }}
                         </div>

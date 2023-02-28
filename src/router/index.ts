@@ -255,7 +255,7 @@ const router = createRouter({
     },
 })
 
-router.beforeEach(async (to) => {
+router.beforeEach(async (to, from) => {
     const appStore = useAppStore()
 
     if (to.name === 'Anticharge') {
@@ -264,9 +264,10 @@ router.beforeEach(async (to) => {
     }
 
     if (to.name === 'LoanContact') {
-        if (!appStore.data.contactData.phone) {
-            return { name: 'LoanPrimary' }
-        }
+        // const { questionnaire } = await appStore.getUser()
+        // if (!questionnaire.contactData.phone) {
+        //     return { name: 'LoanPrimary' }
+        // }
     }
 
     if (to.name === 'LoanCard') {
@@ -300,26 +301,27 @@ router.beforeEach(async (to) => {
     }
 
     if (to.name === 'LoanBefore') {
-        // const {
-        //     passportData: { passportnumber },
-        // } = Store.getters['application/user']
-        // if (passportnumber) {
-        //     if (from.name !== null) {
-        //         await Store.dispatch('application/update')
-        //     }
-        //     const { isSigned } = Store.getters['application/user']
-        //     if (isSigned) {
-        //         Store.commit('application/load', false)
-        //         next({
-        //             name: 'LoanCard',
-        //         })
-        //     } else {
-        //         next()
-        //     }
-        // } else {
-        //     Store.commit('application/load', false)
-        //     next({ name: 'LoanPassport' })
-        // }
+        const {
+            passportData: { passportnumber },
+        } = appStore.data
+
+        if (passportnumber) {
+            console.log(from.name)
+            if (from.name !== null) {
+                await appStore.updateData()
+            }
+            const { isSigned } = appStore.data
+
+            if (isSigned) {
+                // Store.commit('application/load', false)
+                return { name: 'LoanCard' }
+            } else {
+                return
+            }
+        } else {
+            // Store.commit('application/load', false)
+            return { name: 'LoanContact' }
+        }
     }
 })
 

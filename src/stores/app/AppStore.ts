@@ -49,10 +49,10 @@ export const useAppStore = defineStore('AppStore', {
                 phone: '',
             },
             passportData: {
-                passportcode: '',
-                passportnumber: '123456',
-                passportseries: '1111',
-                passportdate: '',
+                passportissuecode: '',
+                passportnumber: '',
+                passportseries: '',
+                passportissuedate: '',
             },
             isSigned: false,
             isSubscribed: false,
@@ -98,7 +98,11 @@ export const useAppStore = defineStore('AppStore', {
         load(flag: boolean) {
             this.isLoad = flag
         },
-        async updateData(data) {
+        async getUser() {
+            const res = await update()
+            return res
+        },
+        async updateData(data: any) {
             let application = data ? data : await update()
 
             if (application.code_value)
@@ -127,7 +131,7 @@ export const useAppStore = defineStore('AppStore', {
                 application.questionnaire?.isSigned || this.data.isSigned
             this.data.isSubscribed = application.questionnaire?.isSubscribed
         },
-        async send(type = 'info', aData) {
+        async send(type = 'info', aData: any) {
             const contactData = {
                 ...this.data.contactData,
                 ...aData.contactData,

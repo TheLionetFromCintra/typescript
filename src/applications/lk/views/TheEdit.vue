@@ -34,8 +34,8 @@ interface Form {
     addrcity: string
     passportseries: string
     passportnumber: string
-    passportcode: string
-    passportdate: string
+    passportissuecode: string
+    passportissuedate: string
 }
 
 interface Options {
@@ -64,8 +64,8 @@ const form = reactive<Form>({
     addrcity: '',
     passportseries: '',
     passportnumber: '',
-    passportcode: '',
-    passportdate: '',
+    passportissuecode: '',
+    passportissuedate: '',
 })
 form.firstname = appStore.data.contactData.firstname
 form.lastname = appStore.data.contactData.lastname
@@ -74,7 +74,10 @@ form.birthday = appStore.data.contactData.birthday
 form.gender = String(appStore.data.contactData.gender) || '0'
 
 form.addrcity = appStore.data.contactData.addrcity ?? ''
-form.passportcode = setMask(appStore.data.passportData.passportcode, '###-###')
+form.passportissuecode = setMask(
+    appStore.data.passportData.passportissuecode,
+    '###-###'
+)
 form.passportnumber = setMask(
     appStore.data.passportData.passportnumber,
     '### ###'
@@ -83,7 +86,7 @@ form.passportseries = setMask(
     appStore.data.passportData.passportseries,
     '## ##'
 )
-form.passportdate = appStore.data.passportData.passportdate
+form.passportissuedate = appStore.data.passportData.passportissuedate
 //--FORM DATA
 
 //FORM ERRORS
@@ -95,10 +98,10 @@ let errors = reactive<Form>({
     lastname: '',
     patronymic: '',
     email: '',
-    passportcode: '',
+    passportissuecode: '',
     passportnumber: '',
     passportseries: '',
-    passportdate: '',
+    passportissuedate: '',
 })
 
 let validateFields = reactive({
@@ -149,7 +152,7 @@ const formRules = reactive({
     lastname: [Validation.REQUIRED, ...NAME_RULES],
     patronymic: NAME_RULES,
     email: [Validation.EMAIL],
-    passportcode: [
+    passportissuecode: [
         Validation.REQUIRED,
         [Validation.MIN, 6],
         [Validation.MAX, 6],
@@ -164,7 +167,7 @@ const formRules = reactive({
         [Validation.MIN, 4],
         [Validation.MAX, 4],
     ],
-    passportdate: ISSUE_DATE_VALIDATE,
+    passportissuedate: ISSUE_DATE_VALIDATE,
 })
 const customErrors = reactive({
     firstname: NAME_ERROR_MSG,
@@ -178,7 +181,7 @@ const customErrors = reactive({
             ? `Возраст заемщика не должен превышать ${MAX_BORROWER_OLD} лет`
             : `Мы не страхуем лица страше ${MAX_BORROWER_OLD} лет`,
     },
-    passportdate: {
+    passportissuedate: {
         [Validation.DATE_LESS]: 'Дата не может быть больше текущей',
     },
 })
@@ -188,7 +191,7 @@ const customErrors = reactive({
 const submit = async function () {
     const data = {
         ...form,
-        passportcode: setMask(form.passportcode, '###-###'),
+        passportcode: setMask(form.passportissuecode, '###-###'),
         phone: appStore.data.contactData.phone,
     }
 
@@ -208,9 +211,9 @@ const formatedData = function (data: Form) {
     return {
         ...data,
         passportnumber: data.passportnumber.replace(/[^\d]/g, ''),
-        passportcode: data.passportcode.replace(/[^\d]/g, ''),
+        passportissuecode: data.passportissuecode.replace(/[^\d]/g, ''),
         passportseries: data.passportseries.replace(/[^\d]/g, ''),
-        passsportdate: data.passportdate,
+        passsportissuedate: data.passportissuedate,
     }
 }
 
@@ -342,7 +345,7 @@ watch(
                                 </fieldset>
                                 <fieldset class="d-flex small">
                                     <the-field
-                                        v-model.trim="form.passportcode"
+                                        v-model.trim="form.passportissuecode"
                                         type="text"
                                         placeholder="123-456"
                                         label="Код подразделения"
@@ -353,10 +356,10 @@ watch(
                                         max-length="7"
                                         name="passportCode"
                                         auto-tab="passportDate"
-                                        :error="errors.passportcode"
+                                        :error="errors.passportissuecode"
                                     ></the-field>
                                     <the-field
-                                        v-model.trim="form.passportdate"
+                                        v-model.trim="form.passportissuedate"
                                         type="text"
                                         placeholder="дд.мм.гггг"
                                         label="Дата выдачи"
@@ -366,7 +369,7 @@ watch(
                                         max-length="10"
                                         :date-type="true"
                                         name="passportDate"
-                                        :error="errors.passportdate"
+                                        :error="errors.passportissuedate"
                                     ></the-field>
                                 </fieldset>
                             </div>
