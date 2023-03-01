@@ -300,6 +300,14 @@ router.beforeEach(async (to, from) => {
         }
     }
 
+    if (to.path.includes('auth')) {
+        if (Cookies.get('sbg-in')) {
+            return { name: 'LoanPrimary' }
+        } else {
+            return
+        }
+    }
+
     if (to.name === 'LoanBefore') {
         const {
             passportData: { passportnumber },

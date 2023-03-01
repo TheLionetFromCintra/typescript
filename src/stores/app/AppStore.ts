@@ -74,6 +74,15 @@ export const useAppStore = defineStore('AppStore', {
         loanPriceString: (state) => {
             return price(state.calculator.amount)
         },
+        code: (state) => {
+            return state.code_value
+        },
+        csrf_value: (state) => {
+            return state.csrf
+        },
+        user_main: (state) => {
+            return state.user.get('user')
+        },
     },
     actions: {
         initCalculator() {
@@ -98,9 +107,12 @@ export const useAppStore = defineStore('AppStore', {
         load(flag: boolean) {
             this.isLoad = flag
         },
-        async getUser() {
-            const res = await update()
-            return res
+        clearCode() {
+            Storage.delete('code_value')
+            this.code_value = ''
+        },
+        resetTimer() {
+            Storage.delete(`timer-login`)
         },
         async updateData(data: any) {
             let application = data ? data : await update()

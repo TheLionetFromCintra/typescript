@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import auth from '@/api/auth'
+
 import FormWrapper from '@/applications/loan-app/layouts/FormWrapper.vue'
 import TheField from '@/components/form/fields/TheField.vue'
 import TheCode from '@/components/common/code/TheCode.vue'
@@ -7,11 +9,14 @@ import { vAutofocus } from '@/directives/vAutofocus'
 
 import { useRoute, useRouter } from 'vue-router'
 import { computed, reactive, watch } from 'vue'
+import { useAppStore } from '@/stores/app/AppStore'
 
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
+import setMask from '@/helpers/string/setMask'
 
 const { validate, filterErrors } = useValidation()
+const appStore = useAppStore()
 
 const route = useRoute()
 const router = useRouter()
@@ -47,28 +52,33 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const getCode = function () {
-    console.log('done')
-    // auth(route.query.phone)
+    auth({
+        csrf: route.query.csrf,
+        code: form.code,
+        phone: route.query.phone,
+    })
 }
 
 const submit = async function () {
-    console.log('done 123')
-    // const { wrongCode, result } = await auth({
-    //     data: route.query.phone,
-    //     code: form.code,
-    //     code_hash: this.code_hash,
-    // })
+    appStore.load(true)
+    const response = await auth({
+        csrf: route.query.csrf,
+        phone: route.query.phone,
+        code: form.code,
+        code_hash: appStore.code,
+    })
+    appStore.load(false)
 
-    // if (wrongCode) {
-    //     errors.code = 'Неверный код'
-    //     return
-    // }
+    if (response.wrongCode) {
+        errors.code = 'Неверный код'
+        return
+    }
 
-    // if (result) {
-    //     router.push({
-    //         name: 'PersonalAccount',
-    //     })
-    // }
+    if (response.result) {
+        router.push({
+            name: 'PersonalAccount',
+        })
+    }
 }
 
 const validateForm = function () {
@@ -97,7 +107,11 @@ watch(
             Мы отправили код подтверждения на номер <strong>{{ phone }}</strong>
         </p>
     </div>
-    <form-wrapper @submit="validateForm" class="unsub-form">
+    <form-wrapper
+        @submit="validateForm"
+        class="unsub-form"
+        :class="{ loader: appStore.isLoad }"
+    >
         <template #inputs>
             <fieldset class="inputs d-flex align-items-center">
                 <the-field

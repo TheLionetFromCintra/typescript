@@ -1,10 +1,10 @@
 <script setup lang="ts">
-// import final from '@/api/final'
+import final from '@/api/final'
 
 import TheLoan from './TheLoan.vue'
 import ProgressBar from './ProgressBar.vue'
 
-import { ref, computed } from 'vue'
+import { ref, computed, reactive } from 'vue'
 import type { Loan } from '@/types/common/loans'
 
 const startSteps = ref(0)
@@ -18,80 +18,29 @@ let notClickedArr = ref<Loan[]>([])
 
 const popupIsActive = ref(false)
 
-const response = ref<Loan[]>([
-    {
-        logo: 'zaymigo.png',
-        subHeader: 'От 18 лет на срок до 30 дней',
-        link: 'https://t.leads.tech/click/141/36/?sub1=vb&sub2=0&sub3=beeline&sub4=1&sub5=vb',
-        id: 1,
-        title: 'webbankir',
-        header: 'до 30 000',
-        chance: 90,
-    },
-    {
-        logo: 'zaymigo.png',
-        subHeader: 'От 18 лет на срок до 30 дней',
-        link: 'https://t.leads.tech/click/141/36/?sub1=vb&sub2=0&sub3=beeline&sub4=1&sub5=vb',
-        id: 2,
-        title: 'webbankir',
-        header: 'до 80 000',
-        chance: 98,
-    },
-    {
-        logo: 'zaymigo.png',
-        subHeader: 'От 18 лет на срок до 30 дней',
-        link: 'https://t.leads.tech/click/141/36/?sub1=vb&sub2=0&sub3=beeline&sub4=1&sub5=vb',
-        id: 3,
-        title: 'webbankir',
-        header: 'до 20 000',
-        chance: 96,
-    },
-    {
-        logo: 'zaymigo.png',
-        subHeader: 'От 18 лет на срок до 30 дней',
-        link: 'https://t.leads.tech/click/141/36/?sub1=vb&sub2=0&sub3=beeline&sub4=1&sub5=vb',
-        id: 4,
-        title: 'webbankir',
-        header: 'до 50 000',
-        chance: 90,
-    },
-    {
-        logo: 'zaymigo.png',
-        subHeader: 'От 18 лет на срок до 30 дней',
-        link: 'https://t.leads.tech/click/141/36/?sub1=vb&sub2=0&sub3=beeline&sub4=1&sub5=vb',
-        id: 5,
-        title: 'webbankir',
-        header: 'до 40 000',
-        chance: 90,
-    },
-    {
-        logo: 'zaymigo.png',
-        subHeader: 'От 18 лет на срок до 30 дней',
-        link: 'https://t.leads.tech/click/141/36/?sub1=vb&sub2=0&sub3=beeline&sub4=1&sub5=vb',
-        id: 6,
-        title: 'webbankir',
-        header: 'до 90 000',
-        chance: 90,
-    },
-])
+let response = reactive({
+    username: '',
+    targets: {},
+    step4: 1,
+})
+
+const getOffers = async function () {
+    const res = await final()
+    response = res
+}
+getOffers()
 
 const offers = computed(() => {
-    // if (response.targets?.other.length > 0)  // return [...response.targets?.default, ...response.targets?.other]
-
-    // return response.targets?.default
-
-    return response.value
+    if (response.targets) {
+        if (response.targets?.other && response.targets?.other.length > 0)
+            return [...response.targets?.default, ...response.targets?.other]
+        return response.targets?.default
+    }
 })
 
 const isArrSorted = computed(() => {
     return sortedArr.value.length > 0 ? sortedArr.value : offers.value
 })
-
-const getOffers = async function () {
-    // const response = await final()
-    // response.value = response
-}
-// getOffers()
 
 //increase orders steps
 const increaseInitNum = function () {

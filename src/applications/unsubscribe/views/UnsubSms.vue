@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import sendUnsubscribe from '@/api/sendUnsubscribe'
+
 import FormWrapper from '@/applications/loan-app/layouts/FormWrapper.vue'
 import TheField from '@/components/form/fields/TheField.vue'
 import TheCode from '@/components/common/code/TheCode.vue'
@@ -7,9 +9,14 @@ import { vAutofocus } from '@/directives/vAutofocus'
 
 import { useRoute, useRouter } from 'vue-router'
 import { ref, computed, reactive, watch } from 'vue'
+import { useAppStore } from '@/stores/app/AppStore'
+
+import setMask from '@/helpers/string/setMask'
 
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
+
+const appStore = useAppStore()
 
 const { validate, filterErrors } = useValidation()
 
@@ -49,20 +56,21 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const getCode = async function () {
-    console.log('done')
-    // await sendUnsubscribe(route.query.phone)
+    await sendUnsubscribe(setMask(route.query.phone, '+7(###)###-##-##'))
 }
 
 const submit = async function () {
-    console.log('done 123')
-
     isFio.value = false
 
-    // const response = await sendUnsubscribe({
-    //     data: route.query.phone,
-    //     code: form.code,
-    //     code_hash: this.code_hash,
-    // })
+    appStore.load(true)
+    const response = await sendUnsubscribe({
+        data: setMask(route.query.phone, '+7(###)###-##-##'),
+        code: form.code,
+        code_hash: appStore.code,
+    })
+    appStore.load(false)
+
+    console.log(response)
 
     // isFio.value = response.getFio
 
@@ -120,7 +128,11 @@ watch(
             Мы отправили код подтверждения на номер <strong>{{ phone }}</strong>
         </p>
     </div>
-    <form-wrapper @submit="validateForm" class="unsub-form">
+    <form-wrapper
+        @submit="validateForm"
+        class="unsub-form"
+        :class="{ loader: appStore.isLoad }"
+    >
         <template #inputs>
             <fieldset class="inputs d-flex align-items-center">
                 <the-field

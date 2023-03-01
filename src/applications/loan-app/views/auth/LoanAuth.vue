@@ -3,18 +3,23 @@ import FormWrapper from '@/applications/loan-app/layouts/FormWrapper.vue'
 import TheField from '@/components/form/fields/TheField.vue'
 import TheCode from '@/components/common/code/TheCode.vue'
 
+import Storage from '@/ext/storage/storage'
+
 import { vAutofocus } from '@/directives/vAutofocus'
 
 import { useRoute, useRouter } from 'vue-router'
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, watch, ref } from 'vue'
 
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
+import { useAppStore } from '@/stores/app/AppStore'
 
 const { validate, filterErrors } = useValidation()
 
 const route = useRoute()
 const router = useRouter()
+
+const appStore = useAppStore()
 
 const phone = computed(() => {
     return route.query.phone
@@ -47,34 +52,37 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const getCode = async function () {
-    console.log('done')
-    // await this.$store.dispatch('application/send', {
-    //             contactData: this.user.contactData
-    //         })
+    await appStore.send('info', {
+        contactData: {
+            ...appStore.data.contactData,
+        },
+    })
 }
 
 const submit = async function () {
-    console.log('done 123')
+    appStore.load(true)
+    const { wrongCode } = await appStore.send('info', {
+        contactData: {
+            ...appStore.data.contactData,
+            code_hash: appStore.code,
+            code: form.code,
+            phone: appStore.data.contactData.phone || Storage.get('user_phone'),
+        },
+    })
+    appStore.load(false)
 
-    // const { wrongCode } = await this.$store.dispatch('application/send', {
-    //     contactData: {
-    //         ...this.user.contactData,
-    //         code_hash: this.code_hash,
-    //         code: this.code,
-    //         phone: this.user.contactData.phone || Storage.get('user_phone'),
-    //     },
-    // })
+    if (!wrongCode) {
+        await appStore.updateData()
 
-    // if (!wrongCode) {
-    //     await this.$store.dispatch('application/update')
-    //     this.$store.commit('application/clearCode')
-    //     this.$refs.code.resetTimer()
-    //     router.push({ name: 'LoanContact' })
-    //     Storage.delete('user_phone')
-    // } else {
-    //     errors.code = 'Неверный код'
-    //     return
-    // }
+        appStore.clearCode()
+        appStore.resetTimer()
+
+        router.push({ name: 'LoanContact' })
+        Storage.delete('user_phone')
+    } else {
+        errors.code = 'Неверный код'
+        return
+    }
 }
 
 const validateForm = function () {
@@ -104,7 +112,11 @@ watch(
             или используйте другой номер телефона для регистрации.
         </p>
     </div>
-    <form-wrapper @submit="validateForm" class="unsub-form">
+    <form-wrapper
+        @submit="validateForm"
+        class="unsub-form"
+        :class="{ loader: appStore.isLoad }"
+    >
         <template #inputs>
             <fieldset class="inputs d-flex align-items-center">
                 <the-field

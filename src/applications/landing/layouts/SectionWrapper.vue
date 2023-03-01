@@ -60,7 +60,7 @@ h2 {
         z-index: -1;
     }
     &::before {
-        content: url('assets/images/about/bg-1.png');
+        content: url('@/assets/images/common/bg-1.png');
         left: 0;
         filter: blur(15px);
         @media (max-width: $tablet) {
@@ -68,7 +68,7 @@ h2 {
         }
     }
     &::after {
-        content: url('assets/images/about/bg-2.png');
+        content: url('@/assets/images/common/bg-2.png');
         right: 0;
         @media (max-width: $mobile) {
             filter: blur(40px);
@@ -104,7 +104,7 @@ h2 {
             rgba(224, 232, 234, 0.74),
             rgba(224, 232, 234, 0.74)
         ),
-        url('assets/images/stat/stat-bg.png');
+        url('@/assets/images/common/stat-bg.png');
     overflow: hidden;
 
     .wrapper {

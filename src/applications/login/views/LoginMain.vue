@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import auth from '@/api/auth'
+import auth from '@/api/auth'
 
 import FormWrapper from '@/applications/loan-app/layouts/FormWrapper.vue'
 import TheField from '@/components/form/fields/TheField.vue'
@@ -9,10 +9,13 @@ import { reactive, watch } from 'vue'
 
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
+import { useAppStore } from '@/stores/app/AppStore'
+import setMask from '@/helpers/string/setMask'
 
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const appStore = useAppStore()
 
 const { validate, filterErrors } = useValidation()
 
@@ -43,18 +46,25 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
-    // const response = await auth(form)
+    appStore.load(true)
 
-    // if (typeof response.result_phone === 'boolean' && !response.result_phone) {
-    //     errors.phone = 'Данный номер не зарегистрирован'
+    const response = await auth({
+        csrf: appStore.csrf_value,
+        phone: setMask(form.phone, '+7(###)###-##-##'),
+    })
+    appStore.load(false)
 
-    //     return
-    // }
+    if (typeof response.result_phone === 'boolean' && !response.result_phone) {
+        errors.phone = 'Данный номер не зарегистрирован'
+
+        return
+    }
 
     router.push({
         name: 'LoginCode',
         query: {
-            phone: form.phone,
+            phone: response.phone_value,
+            csrf: appStore.csrf_value,
         },
     })
 }
@@ -82,7 +92,11 @@ watch(
     <div class="desc">
         <p>Укажите номер телефона, который Вы использовали при регистрации.</p>
     </div>
-    <form-wrapper @submit="validateForm" class="unsub-form">
+    <form-wrapper
+        @submit="validateForm"
+        class="unsub-form"
+        :class="{ loader: appStore.isLoad }"
+    >
         <template #inputs>
             <fieldset class="inputs d-flex">
                 <the-field

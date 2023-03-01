@@ -210,7 +210,7 @@ const { title, desc, showAuto } = defineProps<Props>()
                 z-index: 1;
 
                 &::before {
-                    content: url('assets/images/main-header/arrow.png');
+                    content: url('@/assets/images/common/arrow.png');
                     position: absolute;
                     left: -15px;
                     top: 50%;

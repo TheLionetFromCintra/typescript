@@ -1,5 +1,6 @@
 <script setup lang="ts">
-// import sendUnsubscribe from '@/api/sendUnsubscribe'
+import sendUnsubscribe from '@/api/sendUnsubscribe'
+
 import FormWrapper from '@/applications/loan-app/layouts/FormWrapper.vue'
 import TheField from '@/components/form/fields/TheField.vue'
 
@@ -9,9 +10,13 @@ import { reactive, watch } from 'vue'
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
 
+import { useAppStore } from '@/stores/app/AppStore'
+
 import { useRouter } from 'vue-router'
+import setMask from '@/helpers/string/setMask'
 
 const router = useRouter()
+const appStore = useAppStore()
 
 const { validate, filterErrors } = useValidation()
 
@@ -42,11 +47,12 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
-    // const info = await sendUnsubscribe(form)
-
-    const info = {
-        status: 'phoneNotFound',
-    }
+    appStore.load(true)
+    const info = await sendUnsubscribe({
+        ...form,
+        phone: setMask(form.phone, '+7(###)###-##-##'),
+    })
+    appStore.load(false)
 
     let routeName =
         info.status === 'phoneNotFound'
@@ -55,8 +61,7 @@ const submit = async function () {
     routeName = info.status === 'sendSMS' ? 'UnsubscribeSms' : routeName
 
     router.push({
-        // name: routeName,
-        name: 'UnsubscribeInfo',
+        name: routeName,
         query: {
             status: info.status,
             phone: form.phone,
@@ -87,7 +92,11 @@ watch(
     <div class="desc">
         <p>Укажите номер телефона, который Вы использовали при регистрации.</p>
     </div>
-    <form-wrapper @submit="validateForm" class="unsub-form">
+    <form-wrapper
+        @submit="validateForm"
+        class="unsub-form"
+        :class="{ loader: appStore.isLoad }"
+    >
         <template #inputs>
             <fieldset class="inputs d-flex">
                 <the-field

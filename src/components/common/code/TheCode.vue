@@ -31,10 +31,6 @@ const setTimer = function (time: number) {
     }, 1000)
 }
 
-const resetTimer = function () {
-    Storage.delete(`timer-login`)
-}
-
 const initTimer = async function (flag = true, getCode = true) {
     let timer = Storage.get(`timer-login`)
 

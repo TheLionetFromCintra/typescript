@@ -7,6 +7,7 @@ import StepWrapper from '../../layouts/StepWrapper.vue'
 import SkeletonForm from '../../layouts/SkeletonForm.vue'
 import TheCheckbox from '@/components/form/checkbox/TheCheckbox.vue'
 import TheField from '@/components/form/fields/TheField.vue'
+// import FormWrapper from '../../layouts/FormWrapper.vue'
 
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
@@ -23,6 +24,8 @@ import {
     onMounted,
     defineAsyncComponent,
     watch,
+    isProxy,
+    toRaw,
 } from 'vue'
 import { useDictionaryStore } from '@/stores/common/DictionaryStore'
 
@@ -116,7 +119,6 @@ const phoneFocus = function () {
 // const test = await appStore.getUser()
 // console.log(test)
 // console.log(contactData)
-// console.log(appStore.data.contactData.phone)
 
 form.phone = appStore.data.contactData.phone ?? ''
 form.email = appStore.data.contactData.email ?? ''
@@ -142,7 +144,12 @@ const submit = async function () {
         router.push({ name: 'LoanContact' })
     } else {
         Storage.set('user_phone', form.phone)
-        router.push({ name: 'LoanAuth' })
+        router.push({
+            name: 'LoanAuth',
+            query: {
+                phone: form.phone,
+            },
+        })
     }
 }
 
@@ -171,6 +178,24 @@ watch(
 //HOOKS
 onMounted(async () => {
     if (isCpa.value) agreement.value = true
+
+    // console.log(appStore.user.get('user').contactData.phone)
+    // if (isProxy(appStore.user)) {
+    //     //this If() block is not really necessary
+    //     const rawObject = toRaw(appStore.user)
+
+    //     // const test = {
+    //     //     ...toRaw(appStore.user),
+    //     // }
+    //     // console.log(test)
+    // }
+    // const test = { ...appStore.user }
+
+    // form.phone = appStore.data.contactData.phone ?? ''
+
+    // const { questionnaire } = await getUser()
+    // console.log(questionnaire.contactData.phone)
+    // form.phone = appStore.data.contactData.phone
 
     // const { questionnaire } = await appStore.getUser()
     // console.log(questionnaire)
@@ -208,6 +233,9 @@ if (isAnticharge.value) {
                     :class="{ loader: appStore.isLoad }"
                 >
                     <template #inputs>
+                        {{ appStore.data.contactData }}
+
+                        <input type="text" :value="form.phone" />
                         <fieldset class="inputs d-flex">
                             <the-field
                                 v-model="form.phone"

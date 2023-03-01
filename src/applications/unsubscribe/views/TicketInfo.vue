@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import getTicket from '@/api/ticket'
+import getTicket from '@/api/ticket'
 
 import { reactive, computed, onMounted } from 'vue'
 import { useDictionaryStore } from '@/stores/common/DictionaryStore'
@@ -29,11 +29,10 @@ const message = computed(() => {
 })
 
 onMounted(async () => {
-    console.log(route.params.uid)
-    // const data = await getTicket(route.params.uid)
+    const data = await getTicket(route.params.uid)
 
-    // ticketProps.ticket = data.ticket
-    // ticketProps.status = data.status
+    ticketProps.ticket = data.ticket
+    ticketProps.status = data.status
 })
 </script>
 

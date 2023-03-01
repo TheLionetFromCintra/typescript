@@ -6,12 +6,12 @@ import { useAppStore } from '@/stores/app/AppStore'
 const dictionaryStore = useDictionaryStore()
 const appStore = useAppStore()
 
-onMounted(() => {
+onMounted(async () => {
     document.querySelector('.preloader')?.remove()
     document.querySelector('html')?.classList.remove('hidden')
 
-    dictionaryStore.init()
-    appStore.updateData()
+    await dictionaryStore.init()
+    await appStore.updateData()
 })
 </script>
 

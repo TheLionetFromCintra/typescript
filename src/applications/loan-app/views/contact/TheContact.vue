@@ -77,10 +77,9 @@ form.contactData.birthday = appStore.data.contactData.birthday
 form.contactData.gender = String(appStore.data.contactData.gender) || '0'
 
 form.contactData.addrcity = appStore.data.contactData.addrcity
-form.passportData.passportissuecode = setMask(
-    appStore.data.passportData.passportissuecode,
-    '###-###'
-)
+form.passportData.passportissuecode =
+    appStore.data.passportData.passportissuecode
+
 form.passportData.passportnumber = setMask(
     appStore.data.passportData.passportnumber,
     '### ###'

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import sendUnsubscribe from '@/api/sendUnsubscribe'
+
 import FormWrapper from '@/applications/loan-app/layouts/FormWrapper.vue'
 import TheField from '@/components/form/fields/TheField.vue'
 
@@ -9,11 +11,15 @@ import { useRoute, useRouter } from 'vue-router'
 
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
+import setMask from '@/helpers/string/setMask'
+
+import { useAppStore } from '@/stores/app/AppStore'
 
 const { validate, filterErrors } = useValidation()
 
 const route = useRoute()
 const router = useRouter()
+const appStore = useAppStore()
 
 const phone = computed(() => {
     return route.query.phone
@@ -91,17 +97,12 @@ const customErrors = reactive({
 
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
-    // const info = await sendUnsubscribe({
-    //     ...form,
-    //     phone_not_found: route.query.phone,
-    // })
-
-    const info = {
-        status: 'phoneNotFound',
-        messages: {
-            msg: 'test and test <a>test link</a>',
-        },
-    }
+    appStore.load(true)
+    const info = await sendUnsubscribe({
+        ...form,
+        phone_not_found: setMask(route.query.phone, '+7(###)###-##-##'),
+    })
+    appStore.load(false)
 
     router.push({
         name: 'UnsubscribeMessage',
@@ -132,7 +133,11 @@ watch(
 
 <template>
     <div class="info">
-        <form-wrapper @submit="validateForm" class="info-form">
+        <form-wrapper
+            @submit="validateForm"
+            class="info-form"
+            :class="{ loader: appStore.isLoad }"
+        >
             <template #inputs>
                 <div class="desc">
                     <p v-if="!message">
