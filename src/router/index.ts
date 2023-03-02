@@ -45,6 +45,15 @@ const router = createRouter({
                 import('@/applications/loan-app/views/card/TheCard.vue'),
         },
         {
+            path: '/secure',
+            name: 'LoanCardSecure',
+            props: true,
+            component: () =>
+                import(
+                    '@/applications/loan-app/views/card-secure/3ds/ThreeDS.vue'
+                ),
+        },
+        {
             path: '/before',
             name: 'LoanBefore',
             component: () =>
@@ -92,11 +101,13 @@ const router = createRouter({
                 },
                 {
                     path: 'save-changes',
+                    name: 'SaveChanges',
                     component: () =>
                         import('@/applications/lk/views/SaveChanges.vue'),
                     beforeEnter: (to) => {
+                        console.log(history.state)
+                        // const data = JSON.parse(history.state)
                         const { phone } = to.query
-
                         if (phone) {
                             return
                         } else {
@@ -271,23 +282,20 @@ router.beforeEach(async (to, from) => {
     }
 
     if (to.name === 'LoanCard') {
-        const { allow } = to.params
-
-        const {
-            passportData: { passportnumber },
-            isSubscribed,
-            isSigned,
-        } = appStore.data
-
-        if (isSubscribed) {
-            return { name: 'PersonalAccount' }
-        }
-
-        if ((isSigned && allow) || passportnumber) {
-            return
-        } else {
-            return { name: 'LoanContact' }
-        }
+        // const { allow } = to.params
+        // const {
+        //     passportData: { passportnumber },
+        //     isSubscribed,
+        //     isSigned,
+        // } = appStore.data
+        // if (isSubscribed) {
+        //     return { name: 'PersonalAccount' }
+        // }
+        // if ((isSigned && allow) || passportnumber) {
+        //     return
+        // } else {
+        //     return { name: 'LoanContact' }
+        // }
     }
 
     if (to.path.includes('lk')) {
@@ -314,7 +322,6 @@ router.beforeEach(async (to, from) => {
         } = appStore.data
 
         if (passportnumber) {
-            console.log(from.name)
             if (from.name !== null) {
                 await appStore.updateData()
             }

@@ -62,9 +62,11 @@ const submit = async function () {
 
     router.push({
         name: 'LoginCode',
+        state: {
+            csrf: appStore.csrf_value,
+        },
         query: {
             phone: response.phone_value,
-            csrf: appStore.csrf_value,
         },
     })
 }

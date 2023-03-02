@@ -64,33 +64,31 @@ const submit = async function () {
 
     appStore.load(true)
     const response = await sendUnsubscribe({
-        data: setMask(route.query.phone, '+7(###)###-##-##'),
+        phone: setMask(route.query.phone, '+7(###)###-##-##'),
         code: form.code,
         code_hash: appStore.code,
     })
     appStore.load(false)
 
-    console.log(response)
+    isFio.value = response.getFio
 
-    // isFio.value = response.getFio
+    if (response.status === 'wrongCode') {
+        errors.code = 'Неверный код'
+        return
+    }
 
-    // if (response.status === 'wrongCode') {
-    //     errors.code = 'Неверный код'
-    //     return
-    // }
+    appStore.clearCode()
+    appStore.resetTimer()
 
-    // this.$store.commit('application/clearCode')
-    // this.$refs.code.resetTimer()
-
-    // if (response.success) {
-    //     router.push({
-    //         name: 'UnsubscribeMessage',
-    //         query: {
-    //             status: 'subscribeCanceled',
-    //             message: 'Вы успешно отписаны!',
-    //         },
-    //     })
-    // }
+    if (response.success) {
+        router.push({
+            name: 'UnsubscribeMessage',
+            query: {
+                status: 'subscribeCanceled',
+                message: 'Вы успешно отписаны!',
+            },
+        })
+    }
 }
 
 const sendForm = function () {

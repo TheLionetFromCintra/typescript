@@ -53,7 +53,7 @@ const customErrors = reactive({})
 //VALIDATION AND SUBMITTING FORM
 const getCode = function () {
     auth({
-        csrf: route.query.csrf,
+        csrf: history.state.csrf,
         code: form.code,
         phone: route.query.phone,
     })
@@ -62,7 +62,7 @@ const getCode = function () {
 const submit = async function () {
     appStore.load(true)
     const response = await auth({
-        csrf: route.query.csrf,
+        csrf: history.state.csrf,
         phone: route.query.phone,
         code: form.code,
         code_hash: appStore.code,

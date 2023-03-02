@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import type { PropType } from 'vue'
+import type { PropType, WritableComputedRef } from 'vue'
 import setDate from '@/helpers/date/setDate'
 
 import setMask from '@/helpers/string/setMask'
@@ -204,6 +204,8 @@ const setPhoneMask = function (v: string) {
 
 const inputEvent = function (e: Event) {
     let v = (e.target as HTMLInputElement).value
+
+    // let field.value = props.modelValue ?? ''
     //forbid letters
 
     if (props.pattern) field.value = v.replace(/[A-Za-zА-Яа-яЁё]/g, '')

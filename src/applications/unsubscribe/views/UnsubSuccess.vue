@@ -9,11 +9,11 @@ const phone = computed(() => {
 })
 
 const status = computed(() => {
-    return route.query.status
+    return history.state.status
 })
 
 const message = computed(() => {
-    return route.query.message
+    return history.state.message
 })
 </script>
 

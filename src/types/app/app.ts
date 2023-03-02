@@ -1,5 +1,6 @@
 export interface App {
     isLoad: boolean
+    isSubmit: boolean
     csrf: string
     code_value: string
     createdAt: string

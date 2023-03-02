@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import sendCard from '@/api/sendCard'
+import checkCard from '@/api/checkCard'
+
 import { vAutofocus } from '@/directives/vAutofocus'
 // @ts-ignore
 import { CardInfo } from 'card-info'
@@ -14,10 +17,12 @@ import {
 import type { WritableComputedRef } from 'vue'
 
 import { useDictionaryStore } from '@/stores/common/DictionaryStore'
+import { useAppStore } from '@/stores/app/AppStore'
+
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
 
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import TheField from '@/components/form/fields/TheField.vue'
 import StepWrapper from '../../layouts/StepWrapper.vue'
@@ -28,8 +33,10 @@ const FormWrapper = defineAsyncComponent(
 )
 
 const route = useRoute()
+const router = useRouter()
 
 const dictionaryStore = useDictionaryStore()
+const appStore = useAppStore()
 
 const { validate, filterErrors } = useValidation()
 
@@ -48,6 +55,7 @@ const showNoCardBlock = ref(false)
 const cardMask = ref(DEFAULT_MASK)
 let cardInfo = reactive({})
 const error = ref('')
+const cardLength = ref(0)
 
 //FORM FIELDS
 interface Form {
@@ -111,6 +119,8 @@ const getCardMask = function () {
             })
             .join(' ')
     }
+
+    cardLength.value = cardMask.value.split('').length
 }
 getCardMask()
 
@@ -188,6 +198,16 @@ const errorsDisplay = computed((): string[] => {
 
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
+    try {
+        appStore.load(true)
+        await checkCard(form.number)
+        appStore.load(false)
+    } catch (e) {
+        errors.number = 'Невалидная карта'
+
+        return
+    }
+
     const card = {
         card: form.number,
         date: `${form.date.split('.')[1]}/${form.date
@@ -197,8 +217,17 @@ const submit = async function () {
         name: form.holder_name,
     }
 
-    console.log('sumbit')
-    console.log(card)
+    appStore.load(true)
+    const data = await sendCard(card)
+    appStore.load(false)
+
+    router.push({
+        name: 'LoanCardSecure',
+        state: {
+            data: JSON.stringify(data),
+            card: JSON.stringify(card),
+        },
+    })
 }
 
 const validateForm = function () {
@@ -243,7 +272,11 @@ onMounted(() => {
     >
         <template #form>
             <suspense>
-                <form-wrapper @submit="validateForm" class="card-form">
+                <form-wrapper
+                    @submit="validateForm"
+                    class="card-form"
+                    :class="{ loader: appStore.isLoad }"
+                >
                     <template #inputs>
                         <h3>Данные банковской карты</h3>
                         <h4>на которую хотите получить займ</h4>
@@ -262,6 +295,7 @@ onMounted(() => {
                                         :valueWithoutMask="true"
                                         :icon="false"
                                         :pattern="true"
+                                        :max-length="cardLength"
                                         v-autofocus
                                         :error="errors.number"
                                     ></the-field>

@@ -34,6 +34,7 @@ async function update(): Promise<any> {
 export const useAppStore = defineStore('AppStore', {
     state: (): App => ({
         isLoad: false,
+        isSubmit: false,
         csrf: '',
         code_value: '',
         createdAt: '',
@@ -80,9 +81,6 @@ export const useAppStore = defineStore('AppStore', {
         csrf_value: (state) => {
             return state.csrf
         },
-        user_main: (state) => {
-            return state.user.get('user')
-        },
     },
     actions: {
         initCalculator() {
@@ -106,6 +104,9 @@ export const useAppStore = defineStore('AppStore', {
         },
         load(flag: boolean) {
             this.isLoad = flag
+        },
+        submitForm(flag: boolean) {
+            this.isSubmit = flag
         },
         clearCode() {
             Storage.delete('code_value')

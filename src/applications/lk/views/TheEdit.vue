@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import changeData from '@/api/changeData'
+
 import AccountWrapper from '../layouts/AccountWrapper.vue'
 import SkeletonForm from '@/applications/loan-app/layouts/SkeletonForm.vue'
 
@@ -6,7 +8,7 @@ import TheField from '@/components/form/fields/TheField.vue'
 import AddressField from '@/components/form/fields/AddressField.vue'
 import RadioBtns from '@/components/form/gender/RadioBtns.vue'
 
-import { defineAsyncComponent, reactive, watch } from 'vue'
+import { defineAsyncComponent, reactive, watch, onMounted } from 'vue'
 
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
@@ -14,6 +16,10 @@ import useMobile from '@/hooks/mobile'
 
 import { useAppStore } from '@/stores/app/AppStore'
 import setMask from '@/helpers/string/setMask'
+
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const FormWrapper = defineAsyncComponent(
     () => import('@/applications/loan-app/layouts/FormWrapper.vue')
@@ -67,26 +73,7 @@ const form = reactive<Form>({
     passportissuecode: '',
     passportissuedate: '',
 })
-form.firstname = appStore.data.contactData.firstname
-form.lastname = appStore.data.contactData.lastname
-form.patronymic = appStore.data.contactData.patronymic
-form.birthday = appStore.data.contactData.birthday
-form.gender = String(appStore.data.contactData.gender) || '0'
 
-form.addrcity = appStore.data.contactData.addrcity ?? ''
-form.passportissuecode = setMask(
-    appStore.data.passportData.passportissuecode,
-    '###-###'
-)
-form.passportnumber = setMask(
-    appStore.data.passportData.passportnumber,
-    '### ###'
-)
-form.passportseries = setMask(
-    appStore.data.passportData.passportseries,
-    '## ##'
-)
-form.passportissuedate = appStore.data.passportData.passportissuedate
 //--FORM DATA
 
 //FORM ERRORS
@@ -190,21 +177,24 @@ const customErrors = reactive({
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
     const data = {
-        ...form,
-        passportcode: setMask(form.passportissuecode, '###-###'),
-        phone: appStore.data.contactData.phone,
+        ...formatedData(form),
+        passportissuecode: setMask(form.passportissuecode, '###-###'),
+        phone: setMask(appStore.data.contactData.phone, '+7(###)###-##-##'),
     }
 
-    console.log(data)
+    appStore.submitForm(true)
+    await changeData(data)
+    appStore.submitForm(false)
 
-    // await changeData(data)
-
-    // this.$router.push({
-    //     name: 'SaveChanges',
-    //     params: {
-    //         data,
-    //     },
-    // })
+    router.push({
+        name: 'SaveChanges',
+        state: {
+            data: JSON.stringify(data),
+        },
+        query: {
+            phone: data.phone,
+        },
+    })
 }
 
 const formatedData = function (data: Form) {
@@ -238,163 +228,190 @@ watch(
     { deep: true }
 )
 //--VALIDATION AND SUBMITTING FORM
+
+onMounted(async () => {
+    appStore.load(true)
+    await appStore.updateData()
+    appStore.load(false)
+
+    form.firstname = appStore.data.contactData.firstname
+    form.lastname = appStore.data.contactData.lastname
+    form.patronymic = appStore.data.contactData.patronymic
+    form.birthday = appStore.data.contactData.birthday
+    form.gender = String(appStore.data.contactData.gender) || '0'
+
+    form.addrcity = appStore.data.contactData.addrcity ?? ''
+    form.passportissuecode = appStore.data.passportData.passportissuecode
+
+    form.passportnumber = setMask(
+        appStore.data.passportData.passportnumber,
+        '### ###'
+    )
+    form.passportseries = setMask(
+        appStore.data.passportData.passportseries,
+        '## ##'
+    )
+    form.passportissuedate = appStore.data.passportData.passportissuedate
+})
 </script>
 
 <template>
     <account-wrapper title="Редактировать данные">
         <template #content>
             <div class="edit">
-                <suspense>
-                    <form-wrapper @submit="validateForm" class="contact-form">
-                        <template #inputs>
+                <form-wrapper
+                    v-if="!appStore.isLoad"
+                    @submit="validateForm"
+                    class="contact-form"
+                    :class="{ loader: appStore.isSubmit }"
+                >
+                    <template #inputs>
+                        <fieldset class="d-flex small">
+                            <the-field
+                                v-model="form.lastname"
+                                type="text"
+                                placeholder="Иванов"
+                                label="Фамилия"
+                                :icon="false"
+                                :error="errors.lastname"
+                            ></the-field>
+                            <the-field
+                                v-model="form.firstname"
+                                type="text"
+                                placeholder="Иван"
+                                label="Имя"
+                                :icon="false"
+                                :error="errors.firstname"
+                            ></the-field>
+                        </fieldset>
+                        <fieldset class="d-flex small">
+                            <the-field
+                                v-model="form.patronymic"
+                                type="text"
+                                placeholder="Иванович"
+                                label="Отчетство (если есть)"
+                                :icon="false"
+                                :error="errors.patronymic"
+                            ></the-field>
+                            <the-field
+                                v-model="form.email"
+                                type="email"
+                                placeholder="user@mail.ru"
+                                label="E-mail"
+                                :icon="false"
+                                :error="errors.email"
+                            ></the-field>
+                        </fieldset>
+                        <fieldset class="d-flex small">
+                            <the-field
+                                v-model.trim="form.birthday"
+                                type="text"
+                                placeholder="дд.мм.гггг"
+                                label="Дата рождения"
+                                :icon="false"
+                                :pattern="true"
+                                mask="##.##.####"
+                                max-length="10"
+                                :date-type="true"
+                                :error="errors.birthday"
+                            ></the-field>
+
+                            <radio-btns
+                                class="radio-wrapper"
+                                v-model="form.gender"
+                                :active-gender="form.gender"
+                                :options="options"
+                                title="Пол"
+                            ></radio-btns>
+                        </fieldset>
+                        <fieldset>
+                            <address-field
+                                v-model.trim="form.addrcity"
+                                :active-value="form.addrcity"
+                                :error="errors.addrcity"
+                            ></address-field>
+                        </fieldset>
+
+                        <div class="d-flex group">
                             <fieldset class="d-flex small">
                                 <the-field
-                                    v-model="form.lastname"
+                                    v-model.trim="form.passportseries"
                                     type="text"
-                                    placeholder="Иванов"
-                                    label="Фамилия"
+                                    placeholder="22 20"
+                                    label="Серия паспорта"
                                     :icon="false"
-                                    :error="errors.lastname"
+                                    :pattern="true"
+                                    :valueWithoutMask="true"
+                                    mask="## ##"
+                                    max-length="5"
+                                    auto-tab="passportNumber"
+                                    :error="errors.passportseries"
                                 ></the-field>
                                 <the-field
-                                    v-model="form.firstname"
+                                    v-model.trim="form.passportnumber"
                                     type="text"
-                                    placeholder="Иван"
-                                    label="Имя"
+                                    placeholder="123 456"
+                                    label="Номер"
                                     :icon="false"
-                                    :error="errors.firstname"
+                                    :pattern="true"
+                                    :valueWithoutMask="true"
+                                    mask="### ###"
+                                    max-length="7"
+                                    name="passportNumber"
+                                    auto-tab="passportCode"
+                                    :error="errors.passportnumber"
                                 ></the-field>
                             </fieldset>
                             <fieldset class="d-flex small">
                                 <the-field
-                                    v-model="form.patronymic"
+                                    v-model.trim="form.passportissuecode"
                                     type="text"
-                                    placeholder="Иванович"
-                                    label="Отчетство (если есть)"
+                                    placeholder="123-456"
+                                    label="Код подразделения"
                                     :icon="false"
-                                    :error="errors.patronymic"
+                                    :pattern="true"
+                                    :valueWithoutMask="true"
+                                    mask="###-###"
+                                    max-length="7"
+                                    name="passportCode"
+                                    auto-tab="passportDate"
+                                    :error="errors.passportissuecode"
                                 ></the-field>
                                 <the-field
-                                    v-model="form.email"
-                                    type="email"
-                                    placeholder="user@mail.ru"
-                                    label="E-mail"
-                                    :icon="false"
-                                    :error="errors.email"
-                                ></the-field>
-                            </fieldset>
-                            <fieldset class="d-flex small">
-                                <the-field
-                                    v-model.trim="form.birthday"
+                                    v-model.trim="form.passportissuedate"
                                     type="text"
                                     placeholder="дд.мм.гггг"
-                                    label="Дата рождения"
+                                    label="Дата выдачи"
                                     :icon="false"
                                     :pattern="true"
                                     mask="##.##.####"
                                     max-length="10"
                                     :date-type="true"
-                                    :error="errors.birthday"
+                                    name="passportDate"
+                                    :error="errors.passportissuedate"
                                 ></the-field>
-
-                                <radio-btns
-                                    class="radio-wrapper"
-                                    v-model="form.gender"
-                                    :active-gender="form.gender"
-                                    :options="options"
-                                    title="Пол"
-                                ></radio-btns>
                             </fieldset>
-                            <fieldset>
-                                <address-field
-                                    v-model.trim="form.addrcity"
-                                    :active-value="form.addrcity"
-                                    :error="errors.addrcity"
-                                ></address-field>
-                            </fieldset>
-
-                            <div class="d-flex group">
-                                <fieldset class="d-flex small">
-                                    <the-field
-                                        v-model.trim="form.passportseries"
-                                        type="text"
-                                        placeholder="22 20"
-                                        label="Серия паспорта"
-                                        :icon="false"
-                                        :pattern="true"
-                                        :valueWithoutMask="true"
-                                        mask="## ##"
-                                        max-length="5"
-                                        auto-tab="passportNumber"
-                                        :error="errors.passportseries"
-                                    ></the-field>
-                                    <the-field
-                                        v-model.trim="form.passportnumber"
-                                        type="text"
-                                        placeholder="123 456"
-                                        label="Номер"
-                                        :icon="false"
-                                        :pattern="true"
-                                        :valueWithoutMask="true"
-                                        mask="### ###"
-                                        max-length="7"
-                                        name="passportNumber"
-                                        auto-tab="passportCode"
-                                        :error="errors.passportnumber"
-                                    ></the-field>
-                                </fieldset>
-                                <fieldset class="d-flex small">
-                                    <the-field
-                                        v-model.trim="form.passportissuecode"
-                                        type="text"
-                                        placeholder="123-456"
-                                        label="Код подразделения"
-                                        :icon="false"
-                                        :pattern="true"
-                                        :valueWithoutMask="true"
-                                        mask="###-###"
-                                        max-length="7"
-                                        name="passportCode"
-                                        auto-tab="passportDate"
-                                        :error="errors.passportissuecode"
-                                    ></the-field>
-                                    <the-field
-                                        v-model.trim="form.passportissuedate"
-                                        type="text"
-                                        placeholder="дд.мм.гггг"
-                                        label="Дата выдачи"
-                                        :icon="false"
-                                        :pattern="true"
-                                        mask="##.##.####"
-                                        max-length="10"
-                                        :date-type="true"
-                                        name="passportDate"
-                                        :error="errors.passportissuedate"
-                                    ></the-field>
-                                </fieldset>
-                            </div>
-                        </template>
-                        <template #btn-label>Обновить</template>
-                    </form-wrapper>
-                    <template #fallback>
-                        <skeleton-form class="contact-skeleton">
-                            <template #inputs>
-                                <div class="bg-animate input-sk"></div>
-                                <div class="skeleton-small d-flex">
-                                    <div class="bg-animate input-sk"></div>
-                                    <div class="bg-animate input-sk"></div>
-                                </div>
-                                <div class="skeleton-small d-flex">
-                                    <div class="bg-animate input-sk"></div>
-                                    <div class="bg-animate input-sk"></div>
-                                    <div class="bg-animate input-sk"></div>
-                                    <div class="bg-animate input-sk"></div>
-                                </div>
-                                <div class="bg-animate input-sk"></div>
-                            </template>
-                        </skeleton-form>
+                        </div>
                     </template>
-                </suspense>
+                    <template #btn-label>Обновить</template>
+                </form-wrapper>
+
+                <skeleton-form class="contact-skeleton" v-else>
+                    <template #inputs>
+                        <div class="bg-animate input-sk"></div>
+                        <div class="skeleton-small d-flex">
+                            <div class="bg-animate input-sk"></div>
+                            <div class="bg-animate input-sk"></div>
+                        </div>
+                        <div class="skeleton-small d-flex">
+                            <div class="bg-animate input-sk"></div>
+                            <div class="bg-animate input-sk"></div>
+                            <div class="bg-animate input-sk"></div>
+                            <div class="bg-animate input-sk"></div>
+                        </div>
+                        <div class="bg-animate input-sk"></div>
+                    </template>
+                </skeleton-form>
             </div>
         </template>
     </account-wrapper>

@@ -106,7 +106,7 @@ const submit = async function () {
 
     router.push({
         name: 'UnsubscribeMessage',
-        query: {
+        state: {
             status: info.status,
             message: info.messages.msg,
         },

@@ -62,8 +62,10 @@ const submit = async function () {
 
     router.push({
         name: routeName,
-        query: {
+        state: {
             status: info.status,
+        },
+        query: {
             phone: form.phone,
         },
     })

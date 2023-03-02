@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import changeData from '@/api/changeData'
+
 import AccountWrapper from '../layouts/AccountWrapper.vue'
 import FormWrapper from '@/applications/loan-app/layouts/FormWrapper.vue'
 import TheField from '@/components/form/fields/TheField.vue'
@@ -7,19 +9,19 @@ import TheCode from '@/components/common/code/TheCode.vue'
 import { vAutofocus } from '@/directives/vAutofocus'
 
 import { useRoute, useRouter } from 'vue-router'
-import { computed, reactive, watch } from 'vue'
+import { reactive, watch } from 'vue'
+import { useAppStore } from '@/stores/app/AppStore'
 
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
+import setMask from '@/helpers/string/setMask'
 
 const { validate, filterErrors } = useValidation()
 
 const route = useRoute()
 const router = useRouter()
 
-const phone = computed(() => {
-    return route.query.phone
-})
+const appStore = useAppStore()
 
 //FORM INPUTS
 interface Form {
@@ -48,28 +50,29 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const getCode = async function () {
-    console.log('done')
-    // await changeData(route.query.phone)
+    await changeData(JSON.parse(history.state.data))
 }
 
 const submit = async function () {
-    console.log('done 123')
+    appStore.load(true)
+    const { status } = await changeData({
+        ...JSON.parse(history.state.data),
+        code: form.code,
+        code_hash: appStore.code,
+    })
+    appStore.load(false)
 
-    // const { status } = await changeData({
-    //     data: route.query.phone,
-    //     code: form.code,
-    //     code_hash: this.code_hash,
-    // })
+    if (status !== 'verifyErrorSms') {
+        await appStore.updateData()
 
-    // if (status !== 'verifyErrorSms') {
-    //     await this.$store.dispatch('application/update')
-    //     this.$store.commit('application/clearCode')
-    //     this.$refs.code.resetTimer()
-    //     router.push({ name: 'PersonalAccount' })
-    // } else {
-    //     errors.code = 'Неверный код'
-    //     return
-    // }
+        appStore.clearCode()
+        appStore.resetTimer()
+
+        router.push({ name: 'PersonalAccount' })
+    } else {
+        errors.code = 'Неверный код'
+        return
+    }
 }
 
 const validateForm = function () {
@@ -100,7 +103,11 @@ watch(
             </div>
         </template>
         <template #content>
-            <form-wrapper @submit="validateForm" class="unsub-form">
+            <form-wrapper
+                @submit="validateForm"
+                class="unsub-form"
+                :class="{ loader: appStore.isLoad }"
+            >
                 <template #inputs>
                     <fieldset class="inputs d-flex align-items-center">
                         <the-field

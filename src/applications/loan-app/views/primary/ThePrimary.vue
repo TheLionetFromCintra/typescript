@@ -7,15 +7,12 @@ import StepWrapper from '../../layouts/StepWrapper.vue'
 import SkeletonForm from '../../layouts/SkeletonForm.vue'
 import TheCheckbox from '@/components/form/checkbox/TheCheckbox.vue'
 import TheField from '@/components/form/fields/TheField.vue'
-// import FormWrapper from '../../layouts/FormWrapper.vue'
 
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
 
 import stat from '@/api/stat'
 import Storage from '@/ext/storage/storage'
-
-// import { storeToRefs } from 'pinia'
 
 import {
     computed,
@@ -24,10 +21,9 @@ import {
     onMounted,
     defineAsyncComponent,
     watch,
-    isProxy,
-    toRaw,
 } from 'vue'
 import { useDictionaryStore } from '@/stores/common/DictionaryStore'
+import setMask from '@/helpers/string/setMask'
 
 import { useAppStore } from '@/stores/app/AppStore'
 import useMobile from '@/hooks/mobile'
@@ -54,7 +50,6 @@ const { isCpa } = useMobile()
 
 const agreement = ref(false)
 const autoPayment = ref(false)
-const isSubmit = ref(false)
 
 const acceptanceText = computed((): string | undefined => {
     if (!Cookies.get('sbg-in'))
@@ -115,23 +110,18 @@ const phoneFocus = function () {
     stat('phone')
 }
 
-// const { contactData } = appStore.user
-// const test = await appStore.getUser()
-// console.log(test)
-// console.log(contactData)
-
-form.phone = appStore.data.contactData.phone ?? ''
-form.email = appStore.data.contactData.email ?? ''
-
 //--FORM INPUTS
 
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
-    appStore.load(true)
+    appStore.submitForm(true)
     const { checkPhoneByCode, noValid } = await appStore.send('info', {
-        contactData: form,
+        contactData: {
+            ...form,
+            phone: setMask(form.phone, '+7(###)###-##-##'),
+        },
     })
-    appStore.load(false)
+    appStore.submitForm(false)
 
     if (noValid && Object.keys(noValid)) {
         errors.phone = (noValid.phone === false && 'Невалидное значение') || ''
@@ -154,8 +144,6 @@ const submit = async function () {
 }
 
 const validateForm = function () {
-    isSubmit.value = true
-
     validateFields = validate(form, formRules, customErrors)
 
     filterErrors(validateFields.formErrors, errors)
@@ -179,31 +167,13 @@ watch(
 onMounted(async () => {
     if (isCpa.value) agreement.value = true
 
-    // console.log(appStore.user.get('user').contactData.phone)
-    // if (isProxy(appStore.user)) {
-    //     //this If() block is not really necessary
-    //     const rawObject = toRaw(appStore.user)
+    appStore.load(true)
+    await appStore.updateData()
+    appStore.load(false)
 
-    //     // const test = {
-    //     //     ...toRaw(appStore.user),
-    //     // }
-    //     // console.log(test)
-    // }
-    // const test = { ...appStore.user }
-
-    // form.phone = appStore.data.contactData.phone ?? ''
-
-    // const { questionnaire } = await getUser()
-    // console.log(questionnaire.contactData.phone)
-    // form.phone = appStore.data.contactData.phone
-
-    // const { questionnaire } = await appStore.getUser()
-    // console.log(questionnaire)
-
-    // if (questionnaire.contactData) {
-    //     form.phone = questionnaire.contactData.phone ?? ''
-    //     form.email = questionnaire.contactData.email ?? ''
-    // }
+    form.phone =
+        setMask(appStore.data.contactData.phone, '+7 ### ### ## ##') ?? ''
+    form.email = appStore.data.contactData.email ?? ''
 })
 //--HOOKS
 
@@ -227,72 +197,67 @@ if (isAnticharge.value) {
         :show-cacl="true"
     >
         <template #form>
-            <suspense>
-                <form-wrapper
-                    @submit="validateForm"
-                    :class="{ loader: appStore.isLoad }"
-                >
-                    <template #inputs>
-                        {{ appStore.data.contactData }}
+            <form-wrapper
+                v-if="!appStore.isLoad"
+                @submit="validateForm"
+                :class="{ loader: appStore.isSubmit }"
+            >
+                <template #inputs>
+                    <fieldset class="inputs d-flex">
+                        <the-field
+                            v-model="form.phone"
+                            type="tel"
+                            placeholder="+7 911 111 11 11"
+                            label="Номер телефона"
+                            :icon="true"
+                            :pattern="true"
+                            v-autofocus
+                            @focus="phoneFocus"
+                            :error="errors.phone"
+                            :disabled="!!appStore.data.contactData.id"
+                        ></the-field>
 
-                        <input type="text" :value="form.phone" />
-                        <fieldset class="inputs d-flex">
-                            <the-field
-                                v-model="form.phone"
-                                type="tel"
-                                placeholder="+7 911 111 11 11"
-                                label="Номер телефона"
-                                :icon="true"
-                                :pattern="true"
-                                v-autofocus
-                                @focus="phoneFocus"
-                                :error="errors.phone"
-                                :disabled="!!appStore.data.contactData.id"
-                            ></the-field>
+                        <the-field
+                            v-model.trim="form.email"
+                            type="email"
+                            placeholder="user@mail.ru"
+                            label="E-mail"
+                            :icon="true"
+                            @focus="emailFocus"
+                            :error="errors.email"
+                        ></the-field>
+                    </fieldset>
 
-                            <the-field
-                                v-model.trim="form.email"
-                                type="email"
-                                placeholder="user@mail.ru"
-                                label="E-mail"
-                                :icon="true"
-                                @focus="emailFocus"
-                                :error="errors.email"
-                            ></the-field>
-                        </fieldset>
-
-                        <div class="checkbox-wrapper">
-                            <the-checkbox
-                                v-if="acceptanceText"
-                                :desc="acceptanceText"
-                                v-model="agreement"
-                                :error="isSubmit && !agreement"
-                            ></the-checkbox>
-                            <the-checkbox
-                                v-if="!isCpa && autoPaymentText"
-                                :desc="autoPaymentText"
-                                v-model="autoPayment"
-                                :error="isSubmit && !autoPayment"
-                            ></the-checkbox>
-                        </div>
-                    </template>
-                    <template #btn-label> Продолжить </template>
-                </form-wrapper>
-                <template #fallback>
-                    <skeleton-form>
-                        <template #inputs>
-                            <div class="input-skeleton d-flex">
-                                <div class="bg-animate input-sk"></div>
-                                <div class="bg-animate input-sk"></div>
-                            </div>
-                            <div class="checkbox-skeleton">
-                                <div class="bg-animate checkbox-sk"></div>
-                                <div class="bg-animate checkbox-sk"></div>
-                            </div>
-                        </template>
-                    </skeleton-form>
+                    <div class="checkbox-wrapper">
+                        <the-checkbox
+                            v-if="acceptanceText"
+                            :desc="acceptanceText"
+                            v-model="agreement"
+                            :error="!agreement"
+                        ></the-checkbox>
+                        <the-checkbox
+                            v-if="!isCpa && autoPaymentText"
+                            :desc="autoPaymentText"
+                            v-model="autoPayment"
+                            :error="!autoPayment"
+                        ></the-checkbox>
+                    </div>
                 </template>
-            </suspense>
+                <template #btn-label> Продолжить </template>
+            </form-wrapper>
+
+            <skeleton-form v-else>
+                <template #inputs>
+                    <div class="input-skeleton d-flex">
+                        <div class="bg-animate input-sk"></div>
+                        <div class="bg-animate input-sk"></div>
+                    </div>
+                    <div class="checkbox-skeleton">
+                        <div class="bg-animate checkbox-sk"></div>
+                        <div class="bg-animate checkbox-sk"></div>
+                    </div>
+                </template>
+            </skeleton-form>
         </template>
     </step-wrapper>
 </template>
