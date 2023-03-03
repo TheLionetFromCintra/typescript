@@ -54,15 +54,21 @@ const getCode = async function () {
 }
 
 const submit = async function () {
-    appStore.load(true)
-    const { status } = await changeData({
-        ...JSON.parse(history.state.data),
-        code: form.code,
-        code_hash: appStore.code,
-    })
-    appStore.load(false)
+    let res
+    try {
+        appStore.load(true)
+        res = await changeData({
+            ...JSON.parse(history.state.data),
+            code: form.code,
+            code_hash: appStore.code,
+        })
+        appStore.load(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
-    if (status !== 'verifyErrorSms') {
+    if (res.status !== 'verifyErrorSms') {
         await appStore.updateData()
 
         appStore.clearCode()

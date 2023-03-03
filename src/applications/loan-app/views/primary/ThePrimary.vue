@@ -50,6 +50,7 @@ const { isCpa } = useMobile()
 
 const agreement = ref(false)
 const autoPayment = ref(false)
+const isSubmit = ref(false)
 
 const acceptanceText = computed((): string | undefined => {
     if (!Cookies.get('sbg-in'))
@@ -114,23 +115,31 @@ const phoneFocus = function () {
 
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
-    appStore.submitForm(true)
-    const { checkPhoneByCode, noValid } = await appStore.send('info', {
-        contactData: {
-            ...form,
-            phone: setMask(form.phone, '+7(###)###-##-##'),
-        },
-    })
-    appStore.submitForm(false)
+    let res
+    try {
+        appStore.submitForm(true)
+        res = await appStore.send('info', {
+            contactData: {
+                ...form,
+                phone: setMask(form.phone, '+7(###)###-##-##'),
+            },
+        })
+        appStore.submitForm(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
-    if (noValid && Object.keys(noValid)) {
-        errors.phone = (noValid.phone === false && 'Невалидное значение') || ''
-        errors.email = (noValid.email === false && 'Невалидное значение') || ''
+    if (res.noValid && Object.keys(res.noValid)) {
+        errors.phone =
+            (res.noValid.phone === false && 'Невалидное значение') || ''
+        errors.email =
+            (res.noValid.email === false && 'Невалидное значение') || ''
 
         return
     }
 
-    if (!checkPhoneByCode) {
+    if (!res.checkPhoneByCode) {
         router.push({ name: 'LoanContact' })
     } else {
         Storage.set('user_phone', form.phone)
@@ -144,6 +153,7 @@ const submit = async function () {
 }
 
 const validateForm = function () {
+    isSubmit.value = true
     validateFields = validate(form, formRules, customErrors)
 
     filterErrors(validateFields.formErrors, errors)
@@ -189,6 +199,7 @@ if (isAnticharge.value) {
 </script>
 
 <template>
+    <base-error v-if="appStore.showError"></base-error>
     <step-wrapper
         :step-current="1"
         :step-max="3"
@@ -233,13 +244,13 @@ if (isAnticharge.value) {
                             v-if="acceptanceText"
                             :desc="acceptanceText"
                             v-model="agreement"
-                            :error="!agreement"
+                            :error="isSubmit && !agreement"
                         ></the-checkbox>
                         <the-checkbox
                             v-if="!isCpa && autoPaymentText"
                             :desc="autoPaymentText"
                             v-model="autoPayment"
-                            :error="!autoPayment"
+                            :error="isSubmit && !autoPayment"
                         ></the-checkbox>
                     </div>
                 </template>

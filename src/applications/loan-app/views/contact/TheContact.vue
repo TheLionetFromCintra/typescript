@@ -315,10 +315,16 @@ onMounted(async () => {
     )
     form.passportData.passportissuedate =
         appStore.data.passportData.passportissuedate
+
+    if (!appStore.data.contactData.phone)
+        router.push({
+            name: 'LoanPrimary',
+        })
 })
 </script>
 
 <template>
+    <base-error v-if="appStore.showError"></base-error>
     <step-wrapper
         :step-current="2"
         :step-max="3"

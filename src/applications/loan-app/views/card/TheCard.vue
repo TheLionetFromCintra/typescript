@@ -199,9 +199,9 @@ const errorsDisplay = computed((): string[] => {
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
     try {
-        appStore.load(true)
+        appStore.submitForm(true)
         await checkCard(form.number)
-        appStore.load(false)
+        appStore.submitForm(false)
     } catch (e) {
         errors.number = 'Невалидная карта'
 
@@ -217,9 +217,9 @@ const submit = async function () {
         name: form.holder_name,
     }
 
-    appStore.load(true)
+    appStore.submitForm(true)
     const data = await sendCard(card)
-    appStore.load(false)
+    appStore.submitForm(false)
 
     router.push({
         name: 'LoanCardSecure',
@@ -252,7 +252,7 @@ watch(
 )
 //--VALIDATION AND SUBMITTING FORM
 
-onMounted(() => {
+onMounted(async () => {
     if (route.query.code) {
         alert(dictionary.get(route.query.code) || 'Используйте другую карту')
     }
@@ -260,6 +260,25 @@ onMounted(() => {
     setTimeout(() => {
         showNoCardBlock.value = true
     }, 25000)
+
+    appStore.load(true)
+    await appStore.updateData()
+    appStore.load(false)
+
+    const {
+        passportData: { passportnumber },
+        isSubscribed,
+        isSigned,
+    } = appStore.data
+
+    if (isSubscribed) {
+        router.push({ name: 'PersonalAccount' })
+    }
+    if (isSigned || passportnumber) {
+        return
+    } else {
+        router.push({ name: 'LoanContact' })
+    }
 })
 </script>
 
@@ -271,114 +290,110 @@ onMounted(() => {
         :show-cacl="true"
     >
         <template #form>
-            <suspense>
-                <form-wrapper
-                    @submit="validateForm"
-                    class="card-form"
-                    :class="{ loader: appStore.isLoad }"
-                >
-                    <template #inputs>
-                        <h3>Данные банковской карты</h3>
-                        <h4>на которую хотите получить займ</h4>
+            <form-wrapper
+                v-if="!appStore.isLoad"
+                @submit="validateForm"
+                class="card-form"
+                :class="{ loader: appStore.isSubmit }"
+            >
+                <template #inputs>
+                    <h3>Данные банковской карты</h3>
+                    <h4>на которую хотите получить займ</h4>
 
-                        <div class="card">
-                            <div class="card__front">
-                                <div class="card__first-line">
-                                    <the-field
-                                        v-model="form.number"
-                                        class="card__field"
-                                        type="text"
-                                        label="Номер карты"
-                                        placeholder="0000 0000 0000 0000"
-                                        :mask="cardMask"
-                                        :dontShowErrorMsg="true"
-                                        :valueWithoutMask="true"
-                                        :icon="false"
-                                        :pattern="true"
-                                        :max-length="cardLength"
-                                        v-autofocus
-                                        :error="errors.number"
-                                    ></the-field>
-                                </div>
-                                <div class="card__second-line">
-                                    <the-field
-                                        v-model.trim="cardName"
-                                        class="card__field card__field-second"
-                                        type="text"
-                                        label="Владелец"
-                                        placeholder="VLADIMIR KIROV"
-                                        :dontShowErrorMsg="true"
-                                        :error="errors.holder_name"
-                                    ></the-field>
-                                    <the-field
-                                        v-model="cardDate"
-                                        class="card__field card__field-last"
-                                        type="text"
-                                        label="Срок"
-                                        placeholder="09/25"
-                                        :dontShowErrorMsg="true"
-                                        auto-tab="cvv"
-                                        mask="##/##"
-                                        :pattern="true"
-                                        :card-type="true"
-                                        max-length="5"
-                                        :error="errors.date"
-                                    ></the-field>
-                                </div>
-                            </div>
-                            <div class="card__back">
+                    <div class="card">
+                        <div class="card__front">
+                            <div class="card__first-line">
                                 <the-field
-                                    v-model="form.cvv"
-                                    class="card__field card__field-back"
-                                    type="password"
-                                    label="CVV"
-                                    placeholder="000"
+                                    v-model="form.number"
+                                    class="card__field"
+                                    type="text"
+                                    label="Номер карты"
+                                    placeholder="0000 0000 0000 0000"
+                                    :mask="cardMask"
                                     :dontShowErrorMsg="true"
-                                    name="cvv"
-                                    mask="###"
+                                    :valueWithoutMask="true"
+                                    :icon="false"
                                     :pattern="true"
-                                    max-length="3"
-                                    :error="errors.cvv"
+                                    :max-length="cardLength"
+                                    v-autofocus
+                                    :error="errors.number"
+                                ></the-field>
+                            </div>
+                            <div class="card__second-line">
+                                <the-field
+                                    v-model.trim="cardName"
+                                    class="card__field card__field-second"
+                                    type="text"
+                                    label="Владелец"
+                                    placeholder="VLADIMIR KIROV"
+                                    :dontShowErrorMsg="true"
+                                    :error="errors.holder_name"
+                                ></the-field>
+                                <the-field
+                                    v-model="cardDate"
+                                    class="card__field card__field-last"
+                                    type="text"
+                                    label="Срок"
+                                    placeholder="09/25"
+                                    :dontShowErrorMsg="true"
+                                    auto-tab="cvv"
+                                    mask="##/##"
+                                    :pattern="true"
+                                    :card-type="true"
+                                    max-length="5"
+                                    :error="errors.date"
                                 ></the-field>
                             </div>
                         </div>
-
-                        <div v-if="errorsDisplay.length" class="card__errors">
-                            <p v-for="error in errorsDisplay" :key="error">
-                                {{ error }}
-                            </p>
+                        <div class="card__back">
+                            <the-field
+                                v-model="form.cvv"
+                                class="card__field card__field-back"
+                                type="password"
+                                label="CVV"
+                                placeholder="000"
+                                :dontShowErrorMsg="true"
+                                name="cvv"
+                                mask="###"
+                                :pattern="true"
+                                max-length="3"
+                                :error="errors.cvv"
+                            ></the-field>
                         </div>
+                    </div>
 
-                        <div
-                            class="desc"
-                            v-if="
-                                dictionaryStore.dictionary.get('dictionary')
-                                    ?.cardTitle
-                            "
-                            v-html="
-                                dictionaryStore.dictionary.get('dictionary')
-                                    ?.cardTitle
-                            "
-                        ></div>
-                        <div class="no-card" v-if="showNoCardBlock">
-                            <router-link to="/final"
-                                >У меня нет карты</router-link
-                            >
-                        </div>
-                    </template>
-                    <template #btn-label>Продолжить</template>
-                </form-wrapper>
-                <template #fallback>
-                    <skeleton-form class="card-skeleton">
-                        <template #inputs>
-                            <div class="bg-animate title-sk"></div>
-                            <div class="bg-animate title-sk"></div>
-                            <div class="bg-animate card-sk"></div>
-                            <div class="bg-animate desc-sk"></div>
-                        </template>
-                    </skeleton-form>
+                    <div v-if="errorsDisplay.length" class="card__errors">
+                        <p v-for="error in errorsDisplay" :key="error">
+                            {{ error }}
+                        </p>
+                    </div>
+
+                    <div
+                        class="desc"
+                        v-if="
+                            dictionaryStore.dictionary.get('dictionary')
+                                ?.cardTitle
+                        "
+                        v-html="
+                            dictionaryStore.dictionary.get('dictionary')
+                                ?.cardTitle
+                        "
+                    ></div>
+                    <div class="no-card" v-if="showNoCardBlock">
+                        <router-link to="/final">У меня нет карты</router-link>
+                    </div>
                 </template>
-            </suspense>
+                <template #btn-label>Продолжить</template>
+            </form-wrapper>
+
+            <skeleton-form class="card-skeleton" v-else>
+                <template #inputs>
+                    <div class="bg-animate title-sk"></div>
+                    <div class="bg-animate title-sk"></div>
+                    <div class="bg-animate card-sk"></div>
+                    <div class="bg-animate desc-sk"></div>
+                </template>
+            </skeleton-form>
         </template>
     </step-wrapper>
 </template>

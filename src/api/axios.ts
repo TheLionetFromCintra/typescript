@@ -49,11 +49,9 @@ function apiCaller(path: string, options: Options, index = 0) {
                         const result = await apiCaller(path, options, ++index)
                         resolve(result)
                     } catch (e) {
-                        // Store.commit('error/showError')
                         reject(e)
                     }
                 } else {
-                    // Store.commit('error/showError')
                     reject(e)
                 }
             })
@@ -62,4 +60,4 @@ function apiCaller(path: string, options: Options, index = 0) {
 
 export default apiCaller
 
-export { api }
+export { api, error }

@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import getSignCode from '@/api/getSignCode'
+import sendSignCode from '@/api/sendSignCode'
+// import sendCard from '@/api/sendCard'
+
 import FormWrapper from '@/applications/loan-app/layouts/FormWrapper.vue'
 import TheField from '@/components/form/fields/TheField.vue'
 import TheCode from '@/components/common/code/TheCode.vue'
 
 import { vAutofocus } from '@/directives/vAutofocus'
 
-import { useRoute, useRouter } from 'vue-router'
-import { computed, reactive, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { reactive, watch } from 'vue'
 
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
@@ -15,17 +19,14 @@ import TheHeader from '@/components/common/headers/TheHeader.vue'
 import TheFooter from '@/components/common/footer/TheFooter.vue'
 
 import { useDictionaryStore } from '@/stores/common/DictionaryStore'
+import { useAppStore } from '@/stores/app/AppStore'
 
 const dictionaryStore = useDictionaryStore()
+const appStore = useAppStore()
 
 const { validate, filterErrors } = useValidation()
 
-const route = useRoute()
 const router = useRouter()
-
-const phone = computed(() => {
-    return route.query.phone
-})
 
 //FORM INPUTS
 interface Form {
@@ -54,48 +55,66 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const getCode = async function () {
-    //     getSignCode({
-    //         contactData: this.user.contactData,
-    //     })
+    getSignCode({
+        contactData: appStore.data.contactData,
+        csrf: appStore.csrf_value,
+    })
 }
 
 const submit = async function () {
-    console.log('done 123')
+    let res
+    try {
+        appStore.load(true)
+        res = await sendSignCode({
+            contactData: {
+                ...appStore.data.contactData,
+                code: form.code,
+                code_hash: appStore.code,
+            },
+            csrf: appStore.csrf_value,
+        })
+        appStore.load(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
-    // const { wrongCode, next_step } = await sendSignCode({
-    //     contactData: {
-    //         ...this.user.contactData,
-    //         code: this.$refs.code.form.code,
-    //         code_hash: this.code_hash
-    //     }
-    // })
+    if (res.wrongCode) {
+        errors.code = 'Неверный код'
+        return
+    }
 
-    // if (wrongCode) {
-    //     errors.code = 'Неверный код'
-    //     return
-    // }
+    appStore.clearCode()
+    appStore.resetTimer()
 
-    // this.$store.commit('application/clearCode')
-    // this.$refs.code.resetTimer()
+    if (res.next_step === 'card') {
+        router.push({
+            name: 'LoanCard',
+        })
+    }
 
-    // if (!this.$route.params.cardInfo) {
-    //     openRoute(next_step)
-    // } else {
+    //to-do
+    // if (!route.params.cardInfo) {
     //     const card = {
     //         card: this.$route.params.cardInfo.number,
     //         date: this.$route.params.cardInfo.date,
     //         cvv: this.$route.params.cardInfo.cvv,
     //         name: this.$route.params.cardInfo.holder_name,
     //     }
-
     //     // @TODO наверняка можно улучшить и вынести сохранение карты в lite
     //     const data = await sendCard(card)
-
     //     router.push({
     //         name: 'LoanCardSecure',
     //         params: {
     //             data,
     //             card,
+    //         },
+    //     })
+    //     router.push({
+    //         name: 'LoanCardSecure',
+    //         state: {
+    //             data: JSON.stringify(data),
+    //             card: JSON.stringify(card),
     //         },
     //     })
     // }
@@ -122,6 +141,7 @@ watch(
 </script>
 
 <template>
+    <base-error v-if="appStore.showError"></base-error>
     <div class="unsub">
         <div class="container">
             <div class="unsub-header">
@@ -142,7 +162,11 @@ watch(
                         СМС, отправленный на Ваш номер.
                     </p>
                 </div>
-                <form-wrapper @submit="validateForm" class="unsub-form">
+                <form-wrapper
+                    @submit="validateForm"
+                    class="unsub-form"
+                    :class="{ loader: appStore.isLoad }"
+                >
                     <template #inputs>
                         <fieldset class="inputs d-flex align-items-center">
                             <the-field
@@ -159,13 +183,13 @@ watch(
                             ></the-field>
                             <div class="code">
                                 <the-code
-                                    :not-init-send="true"
+                                    :not-init-send="false"
                                     :get-code="getCode"
                                 ></the-code>
                             </div>
                         </fieldset>
                     </template>
-                    <template #btn-label>Подтвердить</template>
+                    <template #btn-label>Подписать</template>
                 </form-wrapper>
                 <div class="before-link">
                     <a

@@ -3,7 +3,7 @@ import { defineAsyncComponent } from 'vue'
 
 import TheHeader from '@/components/common/headers/TheHeader.vue'
 import TheFooter from '@/components/common/footer/TheFooter.vue'
-import LoansLoader from './components/LoansLoader.vue'
+import OffersSkeleton from '@/applications/lk/components/OffersSkeleton.vue'
 
 const TheLoans = defineAsyncComponent(() => import('./components/TheLoans.vue'))
 </script>
@@ -31,7 +31,7 @@ const TheLoans = defineAsyncComponent(() => import('./components/TheLoans.vue'))
                 <suspense>
                     <the-loans></the-loans>
                     <template #fallback>
-                        <loans-loader></loans-loader>
+                        <offers-skeleton></offers-skeleton>
                     </template>
                 </suspense>
             </section>

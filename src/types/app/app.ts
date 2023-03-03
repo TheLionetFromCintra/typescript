@@ -1,4 +1,5 @@
 export interface App {
+    showError: boolean
     isLoad: boolean
     isSubmit: boolean
     csrf: string

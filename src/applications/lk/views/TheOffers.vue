@@ -2,7 +2,7 @@
 import { defineAsyncComponent } from 'vue'
 
 import AccountWrapper from '../layouts/AccountWrapper.vue'
-import LoansLoader from '@/applications/final/components/LoansLoader.vue'
+import OffersSkeleton from '../components/OffersSkeleton.vue'
 
 const TheLoans = defineAsyncComponent(
     () => import('@/applications/final/components/TheLoans.vue')
@@ -28,8 +28,8 @@ const TheLoans = defineAsyncComponent(
             <suspense>
                 <the-loans></the-loans>
                 <template #fallback>
-                    <loans-loader></loans-loader>
-                </template>
+                    <offers-skeleton class="lk"></offers-skeleton
+                ></template>
             </suspense>
         </template>
     </account-wrapper>

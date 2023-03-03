@@ -105,8 +105,6 @@ const router = createRouter({
                     component: () =>
                         import('@/applications/lk/views/SaveChanges.vue'),
                     beforeEnter: (to) => {
-                        console.log(history.state)
-                        // const data = JSON.parse(history.state)
                         const { phone } = to.query
                         if (phone) {
                             return
@@ -266,44 +264,17 @@ const router = createRouter({
     },
 })
 
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to) => {
     const appStore = useAppStore()
 
     if (to.name === 'Anticharge') {
         await anticharge(to.query)
-        await appStore.updateData()
-    }
-
-    if (to.name === 'LoanContact') {
-        // const { questionnaire } = await appStore.getUser()
-        // if (!questionnaire.contactData.phone) {
-        //     return { name: 'LoanPrimary' }
-        // }
-    }
-
-    if (to.name === 'LoanCard') {
-        // const { allow } = to.params
-        // const {
-        //     passportData: { passportnumber },
-        //     isSubscribed,
-        //     isSigned,
-        // } = appStore.data
-        // if (isSubscribed) {
-        //     return { name: 'PersonalAccount' }
-        // }
-        // if ((isSigned && allow) || passportnumber) {
-        //     return
-        // } else {
-        //     return { name: 'LoanContact' }
-        // }
     }
 
     if (to.path.includes('lk')) {
         if (!Cookies.get('sbg-in')) {
             return { name: 'landing' }
         } else {
-            // await Store.dispatch('personal/getInfo')
-            // await Store.dispatch('application/update')
             return
         }
     }
@@ -319,22 +290,16 @@ router.beforeEach(async (to, from) => {
     if (to.name === 'LoanBefore') {
         const {
             passportData: { passportnumber },
+            isSigned,
         } = appStore.data
 
         if (passportnumber) {
-            if (from.name !== null) {
-                await appStore.updateData()
-            }
-            const { isSigned } = appStore.data
-
             if (isSigned) {
-                // Store.commit('application/load', false)
                 return { name: 'LoanCard' }
             } else {
                 return
             }
         } else {
-            // Store.commit('application/load', false)
             return { name: 'LoanContact' }
         }
     }

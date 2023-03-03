@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import finalStat from '@/api/finalStat'
+import finalStat from '@/api/finalStat'
 
 import type { PropType } from 'vue'
 import type { Loan } from '@/types/common/loans'
@@ -32,15 +32,15 @@ const buttonCaption = computed(() => {
 })
 
 const clickEvents = function (e: Event, id: number) {
-    // sendInfo(id)
+    if (id) sendInfo(id)
     toggleActive(e)
 }
 
 const sendInfo = function (id: number) {
     try {
-        // finalStat({
-        //     id,
-        // })
+        finalStat({
+            id,
+        })
     } catch (e) {
         console.log('cant sent stat')
     }
@@ -88,12 +88,16 @@ const clickActiveOffer = function () {
         <div
             class="img img-wrapper d-flex align-items-center justify-content-center lazy-img"
         >
-            <img :data-src="data?.logo" :alt="data?.title" v-lazyload />
+            <img
+                :data-src="props.data?.logo"
+                :alt="props.data?.title"
+                v-lazyload
+            />
         </div>
-        <div class="price">{{ data?.header }} <span>₽</span></div>
+        <div class="price">{{ props.data?.header }} <span>₽</span></div>
         <div class="percent">0% /день</div>
         <div class="desc">
-            {{ data?.subHeader }}
+            {{ props.data?.subHeader }}
         </div>
         <div class="btn-wrapper d-flex justify-content-center">
             <base-button
@@ -103,7 +107,7 @@ const clickActiveOffer = function () {
                 :to="data?.link"
                 mode="yellow"
                 target="_blank"
-                @click="clickEvents"
+                @click="clickEvents($event, props.data?.id)"
                 >{{ buttonCaption }}</base-button
             >
         </div>

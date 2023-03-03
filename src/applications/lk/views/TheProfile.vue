@@ -2,7 +2,7 @@
 import { onMounted } from 'vue'
 
 import AccountWrapper from '../layouts/AccountWrapper.vue'
-import LoansLoader from '@/applications/final/components/LoansLoader.vue'
+import ProfileSkeleton from '../components/ProfileSkeleton.vue'
 
 import setMask from '@/helpers/string/setMask'
 
@@ -178,7 +178,7 @@ onMounted(async () => {
                 </div>
             </div>
 
-            <loans-loader v-else></loans-loader>
+            <profile-skeleton v-else></profile-skeleton>
         </template>
     </account-wrapper>
 </template>

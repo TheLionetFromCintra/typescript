@@ -33,6 +33,7 @@ async function update(): Promise<any> {
 
 export const useAppStore = defineStore('AppStore', {
     state: (): App => ({
+        showError: false,
         isLoad: false,
         isSubmit: false,
         csrf: '',
@@ -104,6 +105,9 @@ export const useAppStore = defineStore('AppStore', {
         },
         load(flag: boolean) {
             this.isLoad = flag
+        },
+        loadError(flag: boolean) {
+            this.showError = flag
         },
         submitForm(flag: boolean) {
             this.isSubmit = flag

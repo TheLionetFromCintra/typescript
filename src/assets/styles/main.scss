@@ -471,3 +471,15 @@ header {
         }
     }
 }
+
+iframe {
+    height: 100% !important;
+    margin: 0 auto 40px auto;
+    max-width: 90%;
+    width: 100%;
+    border: 0;
+    padding: 0;
+    outline: none;
+    border-radius: 0;
+    background: #fff;
+}
