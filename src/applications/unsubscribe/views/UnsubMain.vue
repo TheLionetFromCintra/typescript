@@ -47,12 +47,18 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
-    appStore.load(true)
-    const info = await sendUnsubscribe({
-        ...form,
-        phone: setMask(form.phone, '+7(###)###-##-##'),
-    })
-    appStore.load(false)
+    let info
+    try {
+        appStore.load(true)
+        info = await sendUnsubscribe({
+            ...form,
+            phone: setMask(form.phone, '+7(###)###-##-##'),
+        })
+        appStore.load(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
     let routeName =
         info.status === 'phoneNotFound'
@@ -91,6 +97,7 @@ watch(
 </script>
 
 <template>
+    <base-error v-if="appStore.showError"></base-error>
     <div class="desc">
         <p>Укажите номер телефона, который Вы использовали при регистрации.</p>
     </div>

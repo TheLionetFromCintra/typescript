@@ -46,13 +46,18 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
-    appStore.load(true)
-
-    const response = await auth({
-        csrf: appStore.csrf_value,
-        phone: setMask(form.phone, '+7(###)###-##-##'),
-    })
-    appStore.load(false)
+    let response
+    try {
+        appStore.load(true)
+        response = await auth({
+            csrf: appStore.csrf_value,
+            phone: setMask(form.phone, '+7(###)###-##-##'),
+        })
+        appStore.load(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
     if (typeof response.result_phone === 'boolean' && !response.result_phone) {
         errors.phone = 'Данный номер не зарегистрирован'
@@ -91,6 +96,7 @@ watch(
 </script>
 
 <template>
+    <base-error v-if="appStore.showError"></base-error>
     <div class="desc">
         <p>Укажите номер телефона, который Вы использовали при регистрации.</p>
     </div>

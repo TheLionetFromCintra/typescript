@@ -3,9 +3,14 @@ import final from '@/api/final'
 
 import TheLoan from './TheLoan.vue'
 import ProgressBar from './ProgressBar.vue'
+import OffersSkeleton from '@/applications/lk/components/OffersSkeleton.vue'
 
 import { ref, computed, reactive } from 'vue'
 import type { Loan } from '@/types/common/loans'
+
+import { useAppStore } from '@/stores/app/AppStore'
+
+const appStore = useAppStore()
 
 const startSteps = ref(0)
 const counter = ref(0)
@@ -25,8 +30,19 @@ let response = reactive({
 })
 
 const getOffers = async function () {
-    const res = await final()
-    response = res
+    let res
+    try {
+        appStore.load(true)
+        res = await final()
+        appStore.load(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
+
+    response.username = res.username
+    response.targets = res.targets
+    response.step4 = res.step4
 }
 getOffers()
 
@@ -97,7 +113,8 @@ const addToClickedArr = function (id: number | undefined) {
 </script>
 
 <template>
-    <div class="loans">
+    <base-error v-if="appStore.showError"></base-error>
+    <div class="loans" v-if="!appStore.isLoad">
         <the-loan
             v-for="(loan, index) in isArrSorted"
             :key="loan.id"
@@ -111,6 +128,7 @@ const addToClickedArr = function (id: number | undefined) {
             @clickActive="addToClickedArr"
         ></the-loan>
     </div>
+    <offers-skeleton class="lk" v-else></offers-skeleton>
     <progress-bar
         v-if="popupIsActive"
         :initSteps="startSteps"

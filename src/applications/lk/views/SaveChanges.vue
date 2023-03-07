@@ -14,11 +14,9 @@ import { useAppStore } from '@/stores/app/AppStore'
 
 import Validation from '@/ext/validation/validation'
 import useValidation from '@/hooks/validation'
-import setMask from '@/helpers/string/setMask'
 
 const { validate, filterErrors } = useValidation()
 
-const route = useRoute()
 const router = useRouter()
 
 const appStore = useAppStore()
@@ -50,7 +48,12 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const getCode = async function () {
-    await changeData(JSON.parse(history.state.data))
+    try {
+        await changeData(JSON.parse(history.state.data))
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 }
 
 const submit = async function () {

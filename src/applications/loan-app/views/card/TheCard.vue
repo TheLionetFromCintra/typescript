@@ -204,7 +204,6 @@ const submit = async function () {
         appStore.submitForm(false)
     } catch (e) {
         errors.number = 'Невалидная карта'
-
         return
     }
 
@@ -217,9 +216,15 @@ const submit = async function () {
         name: form.holder_name,
     }
 
-    appStore.submitForm(true)
-    const data = await sendCard(card)
-    appStore.submitForm(false)
+    let data
+    try {
+        appStore.submitForm(true)
+        data = await sendCard(card)
+        appStore.submitForm(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
     router.push({
         name: 'LoanCardSecure',
@@ -283,6 +288,7 @@ onMounted(async () => {
 </script>
 
 <template>
+    <base-error v-if="appStore.showError"></base-error>
     <step-wrapper
         :step-current="3"
         :step-max="3"

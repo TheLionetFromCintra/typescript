@@ -18,15 +18,5 @@ onMounted(async () => {
 
 <template>
     <router-view></router-view>
-    <!-- <router-view v-slot="{ Component }">
-        <template v-if="Component.name !== 'unsubscribe'">
-            <keep-alive>
-                <component :is="Component" />
-            </keep-alive>
-        </template>
-        <template v-else>
-            <component :is="Component" />
-        </template>
-    </router-view> -->
     <base-button-up></base-button-up>
 </template>

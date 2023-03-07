@@ -202,47 +202,63 @@ const customErrors = reactive({
 
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
-    appStore.submitForm(true)
-    const { next_step, noValid } = await appStore.send('info', {
-        contactData: {
-            ...formatedData(form).contactData,
-        },
-        passportData: {
-            ...formatedData(form).passportData,
-            passportissuecode: setMask(
-                form.passportData.passportissuecode,
-                '###-###'
-            ),
-        },
-    })
-    appStore.submitForm(false)
+    let response
+    try {
+        appStore.submitForm(true)
+        response = await appStore.send('info', {
+            contactData: {
+                ...formatedData(form).contactData,
+            },
+            passportData: {
+                ...formatedData(form).passportData,
+                passportissuecode: setMask(
+                    form.passportData.passportissuecode,
+                    '###-###'
+                ),
+            },
+        })
+        appStore.submitForm(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
-    if (noValid && Object.keys(noValid)) {
+    if (response.noValid && Object.keys(response.noValid)) {
         errors.contactData.firstname =
-            (noValid.firstname === false && 'Невалидное значение') || ''
+            (response.noValid.firstname === false && 'Невалидное значение') ||
+            ''
         errors.contactData.lastname =
-            (noValid.lastname === false && 'Невалидное значение') || ''
+            (response.noValid.lastname === false && 'Невалидное значение') || ''
         errors.contactData.patronymic =
-            (noValid.patronymic === false && 'Невалидное значение') || ''
+            (response.noValid.patronymic === false && 'Невалидное значение') ||
+            ''
         errors.contactData.birthday =
-            (noValid.birthday === false && 'Невалидное значение') || ''
+            (response.noValid.birthday === false && 'Невалидное значение') || ''
         errors.contactData.gender =
-            (noValid.gender === false && 'Невалидное значение') || ''
+            (response.noValid.gender === false && 'Невалидное значение') || ''
 
         errors.passportData.passportissuecode =
-            (noValid.passportissuecode === false && 'Невалидное значение') || ''
+            (response.noValid.passportissuecode === false &&
+                'Невалидное значение') ||
+            ''
         errors.passportData.passportnumber =
-            (noValid.passportnumber === false && 'Невалидное значение') || ''
+            (response.noValid.passportnumber === false &&
+                'Невалидное значение') ||
+            ''
         errors.passportData.passportseries =
-            (noValid.passportseries === false && 'Невалидное значение') || ''
+            (response.noValid.passportseries === false &&
+                'Невалидное значение') ||
+            ''
         errors.passportData.passportissuedate =
-            (noValid.passportissuedate === false && 'Невалидное значение') || ''
+            (response.noValid.passportissuedate === false &&
+                'Невалидное значение') ||
+            ''
 
         return
     }
 
     router.push({
-        name: next_step === 'before' ? 'LoanBefore' : 'LoanContact',
+        name: response.next_step === 'before' ? 'LoanBefore' : 'LoanContact',
     })
 }
 
@@ -291,30 +307,31 @@ watch(
 //--VALIDATION AND SUBMITTING FORM
 
 onMounted(async () => {
-    appStore.load(true)
-    await appStore.updateData()
-    appStore.load(false)
+    try {
+        appStore.load(true)
+        await appStore.updateData()
+        appStore.load(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
-    form.contactData.firstname = appStore.data.contactData.firstname
-    form.contactData.lastname = appStore.data.contactData.lastname
-    form.contactData.patronymic = appStore.data.contactData.patronymic
-    form.contactData.birthday = appStore.data.contactData.birthday
+    form.contactData.firstname = appStore.data.contactData.firstname ?? ''
+    form.contactData.lastname = appStore.data.contactData.lastname ?? ''
+    form.contactData.patronymic = appStore.data.contactData.patronymic ?? ''
+    form.contactData.birthday = appStore.data.contactData.birthday ?? ''
     form.contactData.gender = String(appStore.data.contactData.gender) || '0'
 
-    form.contactData.addrcity = appStore.data.contactData.addrcity
+    form.contactData.addrcity = appStore.data.contactData.addrcity ?? ''
     form.passportData.passportissuecode =
-        appStore.data.passportData.passportissuecode
+        appStore.data.passportData.passportissuecode ?? ''
 
-    form.passportData.passportnumber = setMask(
-        appStore.data.passportData.passportnumber,
-        '### ###'
-    )
-    form.passportData.passportseries = setMask(
-        appStore.data.passportData.passportseries,
-        '## ##'
-    )
+    form.passportData.passportnumber =
+        setMask(appStore.data.passportData.passportnumber, '### ###') ?? ''
+    form.passportData.passportseries =
+        setMask(appStore.data.passportData.passportseries, '## ##') ?? ''
     form.passportData.passportissuedate =
-        appStore.data.passportData.passportissuedate
+        appStore.data.passportData.passportissuedate ?? ''
 
     if (!appStore.data.contactData.phone)
         router.push({

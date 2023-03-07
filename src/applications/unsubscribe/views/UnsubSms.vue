@@ -56,19 +56,30 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const getCode = async function () {
-    await sendUnsubscribe(setMask(route.query.phone, '+7(###)###-##-##'))
+    try {
+        await sendUnsubscribe(setMask(route.query.phone, '+7(###)###-##-##'))
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 }
 
 const submit = async function () {
     isFio.value = false
 
-    appStore.load(true)
-    const response = await sendUnsubscribe({
-        phone: setMask(route.query.phone, '+7(###)###-##-##'),
-        code: form.code,
-        code_hash: appStore.code,
-    })
-    appStore.load(false)
+    let response
+    try {
+        appStore.load(true)
+        response = await sendUnsubscribe({
+            phone: setMask(route.query.phone, '+7(###)###-##-##'),
+            code: form.code,
+            code_hash: appStore.code,
+        })
+        appStore.load(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
     isFio.value = response.getFio
 
@@ -121,6 +132,7 @@ watch(
 </script>
 
 <template>
+    <base-error v-if="appStore.showError"></base-error>
     <div class="desc">
         <p>
             Мы отправили код подтверждения на номер <strong>{{ phone }}</strong>

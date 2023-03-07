@@ -182,9 +182,14 @@ const submit = async function () {
         phone: setMask(appStore.data.contactData.phone, '+7(###)###-##-##'),
     }
 
-    appStore.submitForm(true)
-    await changeData(data)
-    appStore.submitForm(false)
+    try {
+        appStore.submitForm(true)
+        await changeData(data)
+        appStore.submitForm(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
     router.push({
         name: 'SaveChanges',
@@ -230,32 +235,34 @@ watch(
 //--VALIDATION AND SUBMITTING FORM
 
 onMounted(async () => {
-    appStore.load(true)
-    await appStore.updateData()
-    appStore.load(false)
+    try {
+        appStore.load(true)
+        await appStore.updateData()
+        appStore.load(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
-    form.firstname = appStore.data.contactData.firstname
-    form.lastname = appStore.data.contactData.lastname
-    form.patronymic = appStore.data.contactData.patronymic
-    form.birthday = appStore.data.contactData.birthday
+    form.firstname = appStore.data.contactData.firstname ?? ''
+    form.lastname = appStore.data.contactData.lastname ?? ''
+    form.patronymic = appStore.data.contactData.patronymic ?? ''
+    form.birthday = appStore.data.contactData.birthday ?? ''
     form.gender = String(appStore.data.contactData.gender) || '0'
 
     form.addrcity = appStore.data.contactData.addrcity ?? ''
-    form.passportissuecode = appStore.data.passportData.passportissuecode
+    form.passportissuecode = appStore.data.passportData.passportissuecode ?? ''
 
-    form.passportnumber = setMask(
-        appStore.data.passportData.passportnumber,
-        '### ###'
-    )
-    form.passportseries = setMask(
-        appStore.data.passportData.passportseries,
-        '## ##'
-    )
-    form.passportissuedate = appStore.data.passportData.passportissuedate
+    form.passportnumber =
+        setMask(appStore.data.passportData.passportnumber, '### ###') ?? ''
+    form.passportseries =
+        setMask(appStore.data.passportData.passportseries, '## ##') ?? ''
+    form.passportissuedate = appStore.data.passportData.passportissuedate ?? ''
 })
 </script>
 
 <template>
+    <base-error v-if="appStore.showError"></base-error>
     <account-wrapper title="Редактировать данные">
         <template #content>
             <div class="edit">

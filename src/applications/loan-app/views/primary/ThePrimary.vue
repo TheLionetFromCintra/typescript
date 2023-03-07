@@ -177,9 +177,14 @@ watch(
 onMounted(async () => {
     if (isCpa.value) agreement.value = true
 
-    appStore.load(true)
-    await appStore.updateData()
-    appStore.load(false)
+    try {
+        appStore.load(true)
+        await appStore.updateData()
+        appStore.load(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
     form.phone =
         setMask(appStore.data.contactData.phone, '+7 ### ### ## ##') ?? ''

@@ -2,16 +2,24 @@
 import threeDS2 from '@/api/threeDS2'
 
 import { useRouter } from 'vue-router'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
+
+import { useAppStore } from '@/stores/app/AppStore'
 
 const router = useRouter()
+const appStore = useAppStore()
+
+const errTitle = ref('')
+const errDesc = ref('')
+const errAction = ref('')
 
 const close = function () {
     router.push({ name: 'LoanCard' })
 }
 
 const showError = function () {
-    console.log('error')
+    appStore.loadError(true)
+    return
 }
 
 const init = async function () {
@@ -75,7 +83,11 @@ onMounted(() => {
             return
         }
         if (!JSON.parse(history.state.data).type) {
-            console.log('error')
+            appStore.loadError(true)
+            errTitle.value = 'Ошибка проверки карты'
+            errDesc.value =
+                'Мы не смогли проверить вашу карту.<br/> Попробуйте еще раз, или используйте другую'
+            errAction.value = 'Перейти'
             return
         }
         init()
@@ -84,6 +96,12 @@ onMounted(() => {
 </script>
 
 <template>
+    <base-error
+        v-if="appStore.showError"
+        :title="errTitle"
+        :desc="errDesc"
+        :action="errAction"
+    ></base-error>
     <div class="main">
         <div
             @click="close"

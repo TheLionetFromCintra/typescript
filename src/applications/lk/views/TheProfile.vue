@@ -11,13 +11,19 @@ import { useAppStore } from '@/stores/app/AppStore'
 const appStore = useAppStore()
 
 onMounted(async () => {
-    appStore.load(true)
-    await appStore.updateData()
-    appStore.load(false)
+    try {
+        appStore.load(true)
+        await appStore.updateData()
+        appStore.load(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 })
 </script>
 
 <template>
+    <base-error v-if="appStore.showError"></base-error>
     <account-wrapper title="Профиль">
         <template #content>
             <div v-if="!appStore.isLoad">

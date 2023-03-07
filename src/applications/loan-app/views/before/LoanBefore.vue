@@ -55,10 +55,15 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const getCode = async function () {
-    getSignCode({
-        contactData: appStore.data.contactData,
-        csrf: appStore.csrf_value,
-    })
+    try {
+        getSignCode({
+            contactData: appStore.data.contactData,
+            csrf: appStore.csrf_value,
+        })
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 }
 
 const submit = async function () {

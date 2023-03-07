@@ -52,22 +52,33 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const getCode = function () {
-    auth({
-        csrf: history.state.csrf,
-        code: form.code,
-        phone: route.query.phone,
-    })
+    try {
+        auth({
+            csrf: history.state.csrf,
+            code: form.code,
+            phone: route.query.phone,
+        })
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 }
 
 const submit = async function () {
-    appStore.load(true)
-    const response = await auth({
-        csrf: history.state.csrf,
-        phone: route.query.phone,
-        code: form.code,
-        code_hash: appStore.code,
-    })
-    appStore.load(false)
+    let response
+    try {
+        appStore.load(true)
+        response = await auth({
+            csrf: history.state.csrf,
+            phone: route.query.phone,
+            code: form.code,
+            code_hash: appStore.code,
+        })
+        appStore.load(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
     if (response.wrongCode) {
         errors.code = 'Неверный код'
@@ -102,9 +113,11 @@ watch(
 </script>
 
 <template>
+    <base-error v-if="appStore.showError"></base-error>
     <div class="desc">
         <p>
-            Мы отправили код подтверждения на номер <strong>{{ phone }}</strong>
+            Мы отправили код подтверждения на номер
+            <strong>{{ setMask(phone, '+7 ### ### ## ##') }}</strong>
         </p>
     </div>
     <form-wrapper

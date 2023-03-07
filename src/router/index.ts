@@ -160,7 +160,6 @@ const router = createRouter({
                         ),
                     beforeEnter: (to) => {
                         const { status, phone, message } = to.query
-
                         if (status || phone || message) {
                             return
                         } else {

@@ -97,18 +97,27 @@ const customErrors = reactive({
 
 //VALIDATION AND SUBMITTING FORM
 const submit = async function () {
-    appStore.load(true)
-    const info = await sendUnsubscribe({
-        ...form,
-        phone_not_found: setMask(route.query.phone, '+7(###)###-##-##'),
-    })
-    appStore.load(false)
+    let info
+    try {
+        appStore.load(true)
+        info = await sendUnsubscribe({
+            ...form,
+            phone_not_found: setMask(route.query.phone, '+7(###)###-##-##'),
+        })
+        appStore.load(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
     router.push({
         name: 'UnsubscribeMessage',
         state: {
             status: info.status,
             message: info.messages.msg,
+        },
+        query: {
+            phone: setMask(route.query.phone, '+7(###)###-##-##'),
         },
     })
 }
@@ -132,6 +141,7 @@ watch(
 </script>
 
 <template>
+    <base-error v-if="appStore.showError"></base-error>
     <div class="info">
         <form-wrapper
             @submit="validateForm"

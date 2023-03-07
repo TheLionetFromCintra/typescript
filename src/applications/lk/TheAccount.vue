@@ -17,16 +17,6 @@ const { isMenu } = useMobile()
                 <div class="account__header" v-if="isMenu">
                     <the-header></the-header>
                 </div>
-                <!-- <router-view v-slot="{ Component }">
-                    <template v-if="Component.name !== 'save-changes'">
-                        <keep-alive>
-                            <component :is="Component" />
-                        </keep-alive>
-                    </template>
-                    <template v-else>
-                        <component :is="Component" />
-                    </template>
-                </router-view> -->
                 <router-view></router-view>
             </div>
             <the-footer class="account__footer"></the-footer>

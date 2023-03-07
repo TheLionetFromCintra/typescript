@@ -52,26 +52,39 @@ const customErrors = reactive({})
 
 //VALIDATION AND SUBMITTING FORM
 const getCode = async function () {
-    await appStore.send('info', {
-        contactData: {
-            ...appStore.data.contactData,
-        },
-    })
+    try {
+        await appStore.send('info', {
+            contactData: {
+                ...appStore.data.contactData,
+            },
+        })
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 }
 
 const submit = async function () {
-    appStore.load(true)
-    const { wrongCode } = await appStore.send('info', {
-        contactData: {
-            ...appStore.data.contactData,
-            code_hash: appStore.code,
-            code: form.code,
-            phone: appStore.data.contactData.phone || Storage.get('user_phone'),
-        },
-    })
-    appStore.load(false)
+    let response
+    try {
+        appStore.load(true)
+        response = await appStore.send('info', {
+            contactData: {
+                ...appStore.data.contactData,
+                code_hash: appStore.code,
+                code: form.code,
+                phone:
+                    appStore.data.contactData.phone ||
+                    Storage.get('user_phone'),
+            },
+        })
+        appStore.load(false)
+    } catch (error) {
+        appStore.loadError(true)
+        return
+    }
 
-    if (!wrongCode) {
+    if (!response.wrongCode) {
         await appStore.updateData()
 
         appStore.clearCode()
@@ -106,6 +119,7 @@ watch(
 </script>
 
 <template>
+    <base-error v-if="appStore.showError"></base-error>
     <div class="desc">
         <p>
             Номер телефона уже используется. Для продолжения введите код из СМС
