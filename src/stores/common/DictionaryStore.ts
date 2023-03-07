@@ -7,6 +7,7 @@ import type { Dictionary } from '@/types/common/dictionary'
 
 interface StateShape {
     dictionary: Map<string, Dictionary>
+    isLoad: boolean
 }
 
 async function getDictionary() {
@@ -32,6 +33,7 @@ async function getDictionary() {
 export const useDictionaryStore = defineStore('DictionaryStore', {
     state: (): StateShape => ({
         dictionary: new Map(),
+        isLoad: false,
     }),
     getters: {
         phoneMask: (state) => {
@@ -52,7 +54,10 @@ export const useDictionaryStore = defineStore('DictionaryStore', {
     },
     actions: {
         async init() {
-            const response: Dictionary = await getDictionary()
+            this.isLoad = true
+            let response: Dictionary = await getDictionary()
+            if (!response) response = await getDictionary()
+            this.isLoad = false
 
             if (response) {
                 response['email'] = VUE_APP_EMAIL

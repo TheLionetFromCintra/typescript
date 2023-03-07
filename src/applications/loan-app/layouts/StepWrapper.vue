@@ -3,7 +3,7 @@ import TheHeader from '@/components/common/headers/TheHeader.vue'
 import TheFooter from '@/components/common/footer/TheFooter.vue'
 import StepCalc from '../components/StepCalc.vue'
 
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 
 import { useDictionaryStore } from '@/stores/common/DictionaryStore'
 import useMobile from '@/hooks/mobile'
@@ -24,6 +24,10 @@ const { stepCurrent, stepMax, stepTitle, mobTitle, showCacl } =
 
 const progressBar = computed(() => {
     return Number(10 + stepCurrent * 30)
+})
+
+onMounted(() => {
+    dictionaryStore.init()
 })
 </script>
 

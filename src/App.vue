@@ -7,7 +7,7 @@ const dictionaryStore = useDictionaryStore()
 // const appStore = useAppStore()
 
 onMounted(async () => {
-    document.querySelector('.preloader')?.remove()
+    document.querySelector('.preloader-wrapper')?.remove()
     document.querySelector('html')?.classList.remove('hidden')
 
     await dictionaryStore.init()

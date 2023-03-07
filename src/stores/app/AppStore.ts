@@ -4,7 +4,7 @@ import Cookies from 'js-cookie'
 import getUser from '@/api/getUser'
 import send from '@/api/send'
 import sendPassport from '@/api/savepass'
-import lite from '@/api/lite'
+// import lite from '@/api/lite'
 
 import Storage from '@/ext/storage/storage'
 
@@ -121,6 +121,8 @@ export const useAppStore = defineStore('AppStore', {
         },
         async updateData(data: any) {
             let application = data ? data : await update()
+
+            if (!application) application = data ? data : await update()
 
             if (application.code_value)
                 Storage.set('code_value', application.code_value)

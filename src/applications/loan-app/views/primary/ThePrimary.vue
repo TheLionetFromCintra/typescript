@@ -178,9 +178,9 @@ onMounted(async () => {
     if (isCpa.value) agreement.value = true
 
     try {
-        appStore.load(true)
+        if (Cookies.get('sbg-identity')) appStore.load(true)
         await appStore.updateData()
-        appStore.load(false)
+        if (Cookies.get('sbg-identity')) appStore.load(false)
     } catch (error) {
         appStore.loadError(true)
         return
@@ -204,6 +204,13 @@ if (isAnticharge.value) {
 </script>
 
 <template>
+    <div class="preloader-wrapper" v-if="dictionaryStore.isLoad">
+        <div class="preloader">
+            <div class="block orange"></div>
+            <div class="block blue"></div>
+        </div>
+    </div>
+
     <base-error v-if="appStore.showError"></base-error>
     <step-wrapper
         :step-current="1"
